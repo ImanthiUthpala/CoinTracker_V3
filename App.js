@@ -4,20 +4,24 @@ import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 import 'react-native-gesture-handler';
 
 import {Home} from "./scr/app/Home";
-import {Track} from "./scr/app/Track";
-import {Plan} from "./scr/app/Plan";
+import {Track} from "./scr/app/Track/Track";
+import {Plan} from "./scr/app/Plan/Plan";
 import {Report} from "./scr/app/Report";
 import {Tips} from "./scr/app/Tips";
 
-const Stack = createNativeStackNavigator();
+
+
+//const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const TrackTab = createMaterialTopTabNavigator();
+const PlanTab = createMaterialTopTabNavigator();
 
  function App() {
   return (
