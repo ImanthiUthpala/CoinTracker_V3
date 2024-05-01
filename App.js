@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaInsetsContext, SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome5 } from '@expo/vector-icons';
-//import { Screen } from 'react-native-screens';
+import { Screen } from 'react-native-screens';
 
 import 'react-native-gesture-handler';
 
@@ -17,38 +17,56 @@ import {Plan} from "./scr/app/Plan/Plan";
 import {Report} from "./scr/app/Report";
 import {Tips} from "./scr/app/Tips";
 
-
+import * as FileSystem from "expo-file-system";
+import * as SQLite from "expo-sqlite";
+import {Asset} from 'expo-asset';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const TrackTab = createMaterialTopTabNavigator();
 const PlanTab = createMaterialTopTabNavigator();
 
-function StackScreen() {
+
+const loadDatabase = async () => {
+  const dbName = "CoinTracker.db";                           //just a name
+  const dbAsset = require("./assets/CoinTracker3.db");        //actual name
+  const dbUri = Asset.fromModule(dbAsset).uri;
+  const dbFilePath = `${FileSystem.documentDirectory}SQLite/${dbName}`;
+
+  try {
+    const fileInfo = await FileSystem.getInfoAsync(dbFilePath);
+    if (!fileInfo.exists) {
+      // Ensure directory exists
+      await FileSystem.makeDirectoryAsync(
+        `${FileSystem.documentDirectory}SQLite`, // Corrected directory path
+        { intermediates: true }
+      );
+      // Download the database file
+      await FileSystem.downloadAsync(dbUri, dbFilePath);
+    }
+  } catch (error) {
+    console.error("Error loading database:", error);
+  }
+};
+
+ export default function App() {
+
+  const [dbLoaded, setDbLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    loadDatabase()
+      .then(() => setDbLoaded(true))
+      .catch((e)=> console.error(e));
+  }, []);
+
+  if (!dbLoaded) 
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          title: 'My home',
-          headerStyle: {
-            backgroundColor: '#f4511e',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
-      />
-    </Stack.Navigator>
+   <View>
+    <Text>Loading...</Text>
+  </View>
+ 
   );
-}
 
-
-
-
- function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator options={{headerTitleAlign:'center'}}
@@ -72,7 +90,6 @@ function StackScreen() {
   );
 }
 
-export default App;
 
 
 
