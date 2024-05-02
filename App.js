@@ -20,6 +20,7 @@ import {Tips} from "./scr/app/Tips";
 import * as FileSystem from "expo-file-system";
 import * as SQLite from "expo-sqlite";
 import {Asset} from 'expo-asset';
+import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite/next';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -69,9 +70,17 @@ const loadDatabase = async () => {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator options={{headerTitleAlign:'center'}}
-       >
-      <Tab.Screen name="Home" component={Home} options={{title:'Home' ,headerTitleAlign:'center' ,tabBarIcon:({color, size})=>(
+      <React.Suspense
+      fallback={
+        <View style={{flex:1}}>
+          <ActivityIndicator size={"large"}/>
+          <Text>Loading Database...</Text>
+        </View>
+      }>
+        <SQLiteProvider databaseName='CoinTracker3.db' useSuspense>
+      <Tab.Navigator>
+
+      <Tab.Screen name="Home" component={Home} options={{title:'Home' ,headerTitleAlign:'center',tabBarIcon:({color, size})=>(
         <FontAwesome5 name="home" size={24} color="black" />
       )}} />
       <Tab.Screen name="Track" component={Track} options={{title:'Track' ,headerTitleAlign:'center' ,tabBarIcon:({color, size})=>(
@@ -86,6 +95,9 @@ const loadDatabase = async () => {
       <Tab.Screen name="Tips" component={Tips} options={{title:'Tips' ,headerTitleAlign:'center' ,tabBarIcon:({color, size})=>(
         <FontAwesome5 name="lightbulb" size={24} color="black" />      )}}/>
     </Tab.Navigator>
+    
+    </SQLiteProvider>
+    </React.Suspense>
     </NavigationContainer>
   );
 }

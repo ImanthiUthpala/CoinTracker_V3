@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet} from 'react-native';
 
-export default function IncomeListItem(){
+export default function ExpenseListItem(){
   return(
     <View style={styles.container}>
-      <Text style={styles.name}>Salary</Text>
-      <Text style={styles.amount}>100,000</Text>
+      <Text style={styles.name}>Food</Text>
+      <Text style={styles.amount}>3000</Text>
     </View>
   )
 

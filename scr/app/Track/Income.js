@@ -19,13 +19,10 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
       <TouchableOpacity
       style={style.floatingButton}
-      >
-        
-        <FontAwesome5 name="plus-square" size={50} color="black" />
-
+      >  
+      <FontAwesome5 name="plus-square" size={50} color="black" />
       </TouchableOpacity>
       
-
     </View>
   );
 };
@@ -37,7 +34,7 @@ const style = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingvertical: 20,
+    paddingVertical: 30,
   },
 
   floatingButton: {
@@ -48,4 +45,3 @@ const style = StyleSheet.create({
     top: 530,
   }
 })
-
