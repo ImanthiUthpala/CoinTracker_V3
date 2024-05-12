@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import Income_listItem from '../../components/Income_listItem';
-import Income_list from '../../components/Income_list';
+import Income_listItem from '../../../components/Income_listItem';
+import Income_list from '../../../components/Income_list';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 

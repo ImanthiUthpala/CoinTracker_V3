@@ -2,7 +2,7 @@ import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import {Budget} from "./Budget";
-import {Bill_Reminder} from "./Bill_Reminder";
+import {Bill_Reminder} from "../Bill_Reminder";
 import {Goal} from "./Goal";
 
 
