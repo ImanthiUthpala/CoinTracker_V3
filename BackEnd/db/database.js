@@ -10,7 +10,7 @@ async function openDatabase(){
       db = await SQLite.openDatabase(DATABASE_NAME);
       console.log('Database opened successfully');
 
-      await db.transactionAsync(tx => {
+      await db.transactionAsync((tx /* SQLite.Transaction */,tx) => {
       tx.executeSql(`PRAGMA foreign_keys = ON;`
       ); // Enable foreign keys     
     });
