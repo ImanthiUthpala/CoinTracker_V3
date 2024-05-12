@@ -5,6 +5,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import {database} from "./BackEnd/db/database";
 
 import Layout from './scr/app/Layout/layout';
+import {DatabaseProvider} from './BackEnd/db/DatabaseContext.js';
 
 
 import * as FileSystem from "expo-file-system";
@@ -17,7 +18,10 @@ import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite/next';
  export default function App() {
 
   return (
-    <Layout/>
+    <DatabaseProvider>
+      <Layout/>
+    </DatabaseProvider>
+    
   );
 }
 

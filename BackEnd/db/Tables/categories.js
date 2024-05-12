@@ -1,10 +1,10 @@
-import { openDatabase } from './database';
+import { openDatabase } from '../database';
 
-async function createSourcesTable(tx) {
+async function createCategoriesTable(tx) {
   await openDatabase();
   await db.transactionAsync( tx => {
     tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS sources(
+      `CREATE TABLE IF NOT EXISTS categories(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE
       );`
@@ -12,61 +12,61 @@ async function createSourcesTable(tx) {
   });
 }
 
-async function insertSource(name) {
+async function insertCategory(name) {
   await openDatabase();
   await db.transactionAsync(tx => {
     tx.executeSql(
-      `INSERT INTO sources (name) VALUES (?)`,[name]
+      `INSERT INTO categories (name) VALUES (?)`,[name]
     );
   });
 }
 
-async function getSources() {
+async function getCategory() {
   await openDatabase();
   const results = await db.transactionAsync(tx => {
     return tx.executeSql(
-      `SELECT * FROM sources`
+      `SELECT * FROM categories`
     );
   });
   const rows = results.rows._array; //convert reults to array of objects
   return rows;
 }
 
-async function getSourceById(id) {
+async function getCategoryById(id) {
   await openDatabase();
   const results = await db.transactionAsync(tx => {
     return tx.executeSql(
-      `SELECT * FROM sources WHERE id = ?`,
+      `SELECT * FROM categories WHERE id = ?`,
       [id]
     );
   });
 }
 
-async function deleteSource(id){
+async function deleteCategory(id){
   await openDatabase();
   await db.transactionAsync(tx => {
     tx.executeSql(
-      `DELETE FROM sources WHERE id = ?`,
+      `DELETE FROM categories WHERE id = ?`,
       [id]
     );
   });
 }
 
-async function updateSource(id, name){
+async function updateCategory(id, name){
   await openDatabase();
   await db.transactionAsync(tx => {
     tx.executeSql(
-      `UPDATE sources SET name = ? WHERE id = ?`, [name, id], // bind parameters as an array
+      `UPDATE categories SET name = ? WHERE id = ?`, [name, id], // bind parameters as an array
       (tx, results) =>{
         if (results.rowsAffected > 0){
-          console.log("Income source updated successfully");
+          console.log("Expense category updated successfully");
         }
         else{
-          console.error("Error updating income source");
+          console.error("Error updating expense category");
         }
       }
     );
   });
 }
 
-export {createSourcesTable, insertSource, getSources, getSourceById, deleteSource, updateSource};
+export {createCategoriesTable, insertCategory, getCategory, getCategoryById, deleteCategory, updateCategory};

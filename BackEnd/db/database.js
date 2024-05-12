@@ -1,22 +1,36 @@
 import * as SQLite from 'expo-sqlite';
 
+const DATABASE_NAME = 'coinTracker.db'
 let db;
 
 async function openDatabase(){
-  if (!db){
-    try{
-      db = await SQLite.openDatabaseAsync('coinTracker.db');
-    await db.transactionAsync(tx => {
+ 
+  try{
+      if (!db){
+      db = await SQLite.openDatabase(DATABASE_NAME);
+      console.log('Database opened successfully');
+
+      await db.transactionAsync(tx => {
       tx.executeSql(`PRAGMA foreign_keys = ON;`
       ); // Enable foreign keys     
     });
-    console.loog('Database opened successfully');
     }
+  }
     catch(error){
       console.error('Error opening database:' , error);
     }
-  }
+  
   return db; // return the database connectin if already open
 }
 
-export {openDatabase};
+function closeDatabase(){
+  if (db){
+    db.close().then(() => {
+      console.log('Database closed successfully');
+      db = null; // clear the reference for proper re-opening
+    }).catch(error => {
+      console.error('Error closing database:', error);
+    });
+  }
+}
+export {openDatabase, closeDatabase};
