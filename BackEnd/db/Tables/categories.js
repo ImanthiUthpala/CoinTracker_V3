@@ -2,8 +2,8 @@ import { openDatabase } from '../database';
 
 async function createCategoriesTable(tx) {
   await openDatabase();
-  await db.transactionAsync( tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `CREATE TABLE IF NOT EXISTS categories(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE
@@ -14,8 +14,8 @@ async function createCategoriesTable(tx) {
 
 async function insertCategory(name) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `INSERT INTO categories (name) VALUES (?)`,[name]
     );
   });
@@ -23,8 +23,8 @@ async function insertCategory(name) {
 
 async function getCategory() {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM categories`
     );
   });
@@ -34,8 +34,8 @@ async function getCategory() {
 
 async function getCategoryById(id) {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM categories WHERE id = ?`,
       [id]
     );
@@ -44,8 +44,8 @@ async function getCategoryById(id) {
 
 async function deleteCategory(id){
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `DELETE FROM categories WHERE id = ?`,
       [id]
     );
@@ -54,8 +54,8 @@ async function deleteCategory(id){
 
 async function updateCategory(id, name){
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `UPDATE categories SET name = ? WHERE id = ?`, [name, id], // bind parameters as an array
       (tx, results) =>{
         if (results.rowsAffected > 0){

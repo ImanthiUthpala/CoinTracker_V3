@@ -2,8 +2,8 @@ import { openDatabase } from '../database';
 
 async function createReminderTable() {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `CREATE TABLE IF NOT EXISTS reminder (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -18,8 +18,8 @@ async function createReminderTable() {
 
 async function insertReminder(title, dueDate, completed = false, billId = null) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `INSERT INTO reminder (title, due_date, completed, bill_id) VALUES (?, ?, ?, ?)`,
       [title, dueDate, completed, billId]
     );
@@ -28,8 +28,8 @@ async function insertReminder(title, dueDate, completed = false, billId = null) 
 
 async function getReminder() {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM reminder`
     );
   });
@@ -39,8 +39,8 @@ async function getReminder() {
 
 async function getReminderById(id) {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM reminder WHERE id = ?`,
       [id]
     );
@@ -51,8 +51,8 @@ async function getReminderById(id) {
 
 async function updateReminder(id, title, dueDate, completed, billId = null) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `UPDATE reminder SET title = ?, due_date = ?, completed = ?, bill_id = ? WHERE id = ?`,
       [title, dueDate, completed, billId, id]
     );
@@ -61,8 +61,8 @@ async function updateReminder(id, title, dueDate, completed, billId = null) {
 
 async function deleteReminder(id) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `DELETE FROM reminder WHERE id = ?`,
       [id]
     );

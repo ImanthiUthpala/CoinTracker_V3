@@ -2,8 +2,8 @@ import { openDatabase } from '../database';
 
 async function createGoalTable() {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `CREATE TABLE IF NOT EXISTS goal (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -18,8 +18,8 @@ async function createGoalTable() {
 
 async function insertGoal(name, targetAmount, dueDate, categoryId) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `INSERT INTO goal (name, target_amount, due_date, category_id) VALUES (?, ?, ?, ?)`,
       [name, targetAmount, dueDate, categoryId]
     );
@@ -28,8 +28,8 @@ async function insertGoal(name, targetAmount, dueDate, categoryId) {
 
 async function getGoal() {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM goal`
     );
   });
@@ -39,8 +39,8 @@ async function getGoal() {
 
 async function getGoalById(id) {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM goal WHERE id = ?`,
       [id]
     );
@@ -51,8 +51,8 @@ async function getGoalById(id) {
 
 async function updateGoal(id, name, targetAmount, dueDate, categoryId) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `UPDATE goal SET name = ?, target_amount = ?, due_date = ?, category_id = ? WHERE id = ?`,
       [name, targetAmount, dueDate, categoryId, id]
     );
@@ -61,8 +61,8 @@ async function updateGoal(id, name, targetAmount, dueDate, categoryId) {
 
 async function deleteGoal(id) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `DELETE FROM goal WHERE id = ?`,
       [id]
     );

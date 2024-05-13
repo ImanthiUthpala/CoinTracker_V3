@@ -2,8 +2,8 @@ import { openDatabase } from '../database';
 
 async function createIncomeTable() {
   await openDatabase();
-  await db.transactionAsync(tx =>{
-    tx.executeSql(
+  await db.transactionAsync(async tx =>{
+    tx.executeSqlAsync(
       `CREATE TABLE IF NOT EXISTS income (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
@@ -17,8 +17,8 @@ async function createIncomeTable() {
 
 async function insertIncome(amount, date, sourceId) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `INSERT INTO income (amount, date, source_id) VALUES (?, ?, ?)`, [amount, date, sourceId]
     );
   });
@@ -26,8 +26,8 @@ async function insertIncome(amount, date, sourceId) {
 
 async function getIncome() {
   await openDatabase();
-  const results = await db.transactionAsync(tx =>{
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx =>{
+    return tx.executeSqlAsync(
       `SELECT * FROM income`
     );
   });
@@ -37,8 +37,8 @@ async function getIncome() {
 
 async function getIncomeById(id) {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM income WHERE id = ?`,
       [id]
     );
@@ -49,8 +49,8 @@ async function getIncomeById(id) {
 
 async function updateIncome(id, amount, date, sourceId) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `UPDATE income SET amount = ?, date = ?, source_id = ? WHERE id = ?`,
       [amount, date, sourceId, id]
     );
@@ -59,8 +59,8 @@ async function updateIncome(id, amount, date, sourceId) {
 
 async function deleteIncome(id) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `DELETE FROM income WHERE id = ?`,
       [id]
     );

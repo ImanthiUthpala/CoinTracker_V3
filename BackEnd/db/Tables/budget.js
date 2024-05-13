@@ -2,8 +2,8 @@ import { openDatabase } from '../database';
 
 async function createBudgetTable() {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `CREATE TABLE IF NOT EXISTS budget (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         start_date TEXT NOT NULL,
@@ -18,8 +18,8 @@ async function createBudgetTable() {
 
 async function insertBudget(startDate, endDate, cashLimit, categoryId) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `INSERT INTO budget (start_date, end_date, cash_limit, category_id) VALUES (?, ?, ?, ?)`,
       [startDate, endDate, cashLimit, categoryId]
     );
@@ -28,8 +28,8 @@ async function insertBudget(startDate, endDate, cashLimit, categoryId) {
 
 async function getBudget() {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM budget`
     );
   });
@@ -39,8 +39,8 @@ async function getBudget() {
 
 async function getBudgetById(id) {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM budget WHERE id = ?`,
       [id]
     );
@@ -51,8 +51,8 @@ async function getBudgetById(id) {
 
 async function updateBudget(id, startDate, endDate, cashLimit, categoryId) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `UPDATE budget SET start_date = ?, end_date = ?, cash_limit = ?, category_id = ? WHERE id = ?`,
       [startDate, endDate, cashLimit, categoryId, id]
     );
@@ -61,8 +61,8 @@ async function updateBudget(id, startDate, endDate, cashLimit, categoryId) {
 
 async function deleteBudget(id) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `DELETE FROM budget WHERE id = ?`,
       [id]
     );

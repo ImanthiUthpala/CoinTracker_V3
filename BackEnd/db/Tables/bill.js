@@ -2,8 +2,8 @@ import { openDatabase } from '../database';
 
 async function createBillTable() {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `CREATE TABLE IF NOT EXISTS bill (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -17,8 +17,8 @@ async function createBillTable() {
 
 async function insertBill(name, dueDate, amount) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `INSERT INTO bill (name, due_date, amount, paid) VALUES (?, ?, ?, ?)`,
       [name, dueDate, amount, false] // Default paid to false
     );
@@ -27,8 +27,8 @@ async function insertBill(name, dueDate, amount) {
 
 async function getBill() {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM bill`
     );
   });
@@ -38,8 +38,8 @@ async function getBill() {
 
 async function getBillById(id) {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM bill WHERE id = ?`,
       [id]
     );
@@ -50,8 +50,8 @@ async function getBillById(id) {
 
 async function updateBill(id, name, dueDate, amount, paid) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `UPDATE bill SET name = ?, due_date = ?, amount = ?, paid = ? WHERE id = ?`,
       [name, dueDate, amount, paid, id]
     );
@@ -60,8 +60,8 @@ async function updateBill(id, name, dueDate, amount, paid) {
 
 async function deleteBill(id) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `DELETE FROM bill WHERE id = ?`,
       [id]
     );

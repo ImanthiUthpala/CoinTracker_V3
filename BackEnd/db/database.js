@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { version } from 'react';
 
 const DATABASE_NAME = 'coinTracker.db'
 let db;
@@ -7,18 +8,17 @@ async function openDatabase(){
  
   try{
       if (!db){
-      db = await SQLite.openDatabase(DATABASE_NAME);
+      db = SQLite.openDatabase(DATABASE_NAME);
       console.log('Database opened successfully');
 
-      await db.transactionAsync((tx /* SQLite.Transaction */,tx) => {
-      tx.executeSql(`PRAGMA foreign_keys = ON;`
-      ); // Enable foreign keys     
-    });
+      await db.transactionAsync(async tx => {
+        tx.executeSqlAsync(`PRAGMA foreign_keys = ON;`); // Enable foreign keys
+      });
     }
-  }
-    catch(error){
+  }catch(error){
+    
       console.error('Error opening database:' , error);
-    }
+  }
   
   return db; // return the database connectin if already open
 }

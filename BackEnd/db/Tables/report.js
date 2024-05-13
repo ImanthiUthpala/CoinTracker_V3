@@ -3,8 +3,8 @@ import { openDatabase } from '../database';
 /* 
 async function getIncomeReportByDateRange(startDate, endDate) {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT SUM(amount) AS total_income, date
        FROM income
        WHERE date >= ? AND date <= ?

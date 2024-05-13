@@ -2,8 +2,8 @@ import { openDatabase } from '../database';
 
 async function createExpenseTable() {
   await openDatabase();
-  await db.transactionAsync(tx =>{
-    tx.executeSql(
+  await db.transactionAsync(async tx =>{
+    tx.executeSqlAsync(
       `CREATE TABLE IF NOT EXISTS expense (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
@@ -17,8 +17,8 @@ async function createExpenseTable() {
 
 async function insertExpense(amount, date, categoryId) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `INSERT INTO expense (amount, date, category_id) VALUES (?, ?, ?)`, [amount, date, categoryId]
     );
   });
@@ -26,8 +26,8 @@ async function insertExpense(amount, date, categoryId) {
 
 async function getExpense() {
   await openDatabase();
-  const results = await db.transactionAsync(tx =>{
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx =>{
+    return tx.executeSqlAsync(
       `SELECT * FROM expense`
     );
   });
@@ -37,8 +37,8 @@ async function getExpense() {
 
 async function getExpenseById(id) {
   await openDatabase();
-  const results = await db.transactionAsync(tx => {
-    return tx.executeSql(
+  const results = await db.transactionAsync(async tx => {
+    return tx.executeSqlAsync(
       `SELECT * FROM expense WHERE id = ?`,
       [id]
     );
@@ -49,8 +49,8 @@ async function getExpenseById(id) {
 
 async function updateExpense(id, amount, date, categoryId) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `UPDATE expense SET amount = ?, date = ?, category_id = ? WHERE id = ?`,
       [amount, date, categoryId, id]
     );
@@ -59,8 +59,8 @@ async function updateExpense(id, amount, date, categoryId) {
 
 async function deleteExpense(id) {
   await openDatabase();
-  await db.transactionAsync(tx => {
-    tx.executeSql(
+  await db.transactionAsync(async tx => {
+    tx.executeSqlAsync(
       `DELETE FROM expense WHERE id = ?`,
       [id]
     );
