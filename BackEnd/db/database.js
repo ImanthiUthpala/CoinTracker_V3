@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import { version } from 'react';
+
 
 const DATABASE_NAME = 'coinTracker.db'
 let db;

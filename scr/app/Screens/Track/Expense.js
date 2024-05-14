@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import Expense_listItem from '../../../components/Expense_listItem';
-import Expense_list from '../../../components/Expense_list';
+import Expense_listItem from '../../components/Expense_listItem';
+import Expense_list from '../../components/Expense_list';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 
