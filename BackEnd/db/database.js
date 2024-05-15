@@ -1,13 +1,12 @@
 import * as SQLite from 'expo-sqlite';
 
-
 const DATABASE_NAME = 'coinTracker.db'
 let db;
 
-async function openDatabase(){
- 
-  try{
-      if (!db){
+async function openDatabase() {
+
+  try {
+    if (!db) {
       db = SQLite.openDatabase(DATABASE_NAME);
       console.log('Database opened successfully');
 
@@ -15,16 +14,17 @@ async function openDatabase(){
         tx.executeSqlAsync(`PRAGMA foreign_keys = ON;`); // Enable foreign keys
       });
     }
-  }catch(error){
-    
-      console.error('Error opening database:' , error);
+
+  } catch (error) {
+
+    console.error('Error opening database:', error);
   }
-  
+
   return db; // return the database connectin if already open
 }
 
-function closeDatabase(){
-  if (db){
+function closeDatabase() {
+  if (db) {
     db.close().then(() => {
       console.log('Database closed successfully');
       db = null; // clear the reference for proper re-opening
@@ -33,4 +33,4 @@ function closeDatabase(){
     });
   }
 }
-export {openDatabase, closeDatabase};
+export { openDatabase, closeDatabase };

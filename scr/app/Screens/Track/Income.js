@@ -4,20 +4,19 @@ import { View, Text, Button, Modal, StyleSheet, TouchableOpacity } from 'react-n
 import { Ionicons } from '@expo/vector-icons';
 import { Source } from './Source';
 
-
-
-
 import { getIncome } from '../../../../BackEnd/db/Tables/income'; // Import function to fetch incomes
+import { Link } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
-export const Income = ({navigation}) => {
 
+export const Income = () => {
 
+  const navigation = useNavigation();
 
+  const handlePress = () =>{
+    navigation.navigate('Source');
+  };
   return (
-
-    
-    
     <View style={styles.container}>
         <View style={{
           padding: 30,
@@ -34,9 +33,8 @@ export const Income = ({navigation}) => {
         <View style={styles.bottomContainer}>
 
           <TouchableOpacity 
+          onPress={handlePress}
           style={styles.addBtn}
-          onPress={()=> navigation.navigate('Source')
-          }
           >
             <Ionicons name="add-circle-sharp" size={60} color="#82E80B" />
           </TouchableOpacity>
@@ -74,9 +72,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
   },
   addBtn: {
-    alignSelf: 'flex-end',
-    marginTop:350,
-    marginRight:10,
+    position:'absolute',
+    top:350,
+    right:5,
+    //marginRight:10,
 
   }
   /* header: {

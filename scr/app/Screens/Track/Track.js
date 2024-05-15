@@ -2,47 +2,84 @@ import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaInsetsContext, SafeAreaProvider } from 'react-native-safe-area-context';
+
 
 import {Income} from "./Income";
 import {Expense} from "./Expense";
 import { Source } from './Source';
+import {AddSource} from './AddSource';
 
 
 const TrackTab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const IncomeStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="Income" component={Income} options={{ headerShown: false }} />
-    <Stack.Screen name="Source" component={Source}  />
-  </Stack.Navigator>
-);
+function SourceStack(){
+  return(
+    <Stack.Navigator screenOptions={{
+      headerShown:false
+    }}>
+      <Stack.Screen
+        name="SourceStack"
+        component={Source}
+        options={{
+          headerShown:false
+        }}
+        />
+      <Stack.Screen
+        name="AddSource"
+        component={AddSource}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+    </Stack.Navigator>
+  );
+}
 
-const TrackStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="TrackTabs" component={Track} options={{ headerShown: false }} />
-    <Stack.Screen name="Source" component={Source} />
-  </Stack.Navigator>
-);
+function IncomeStack(){
+  return(
+    <Stack.Navigator screenOptions={{
+      headerShown:false
+    }}>
+      <Stack.Screen
+        name="IncomeStack"
+        component={Income}
+        options={{
+          headerShown:false
+        }}
+        />
+      <Stack.Screen
+        name="Source"
+        component={SourceStack}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+    </Stack.Navigator>
+  );
+}
+
 
 export const Track = () => {
   return (
+    <SafeAreaProvider>
       <TrackTab.Navigator>
-      <TrackTab.Screen name="Income" component={Income} />
+      <TrackTab.Screen name="Income" component={IncomeStack} />
       <TrackTab.Screen name="Expense" component={Expense} />
+
+      
+
     </TrackTab.Navigator>
     
-    
+    </SafeAreaProvider>
        
       
   );
 }
 
- /*<Stack.Navigator>
-          <Stack.Screen name="Source" component={Source} />
-        </Stack.Navigator> */
 
-//export default Track;
-/*export const Track = () => {
-  // ... Your Home screen component code
-};*/

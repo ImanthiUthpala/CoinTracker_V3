@@ -1,27 +1,31 @@
 import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import {database} from "./BackEnd/db/database";
+import { database } from "./BackEnd/db/database";
 
 import Layout from './scr/app/Layout/layout';
-import {DatabaseProvider} from './BackEnd/db/DatabaseContext.js';
+import { DatabaseProvider } from './BackEnd/db/DatabaseContext.js';
 
 
 import * as FileSystem from "expo-file-system";
 import * as SQLite from "expo-sqlite";
-import {Asset} from 'expo-asset';
+import { Asset } from 'expo-asset';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite/next';
 
 
 
- export default function App() {
+export default function App() {
 
   return (
     <DatabaseProvider>
-      <Layout/>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+      <Layout />
+      </GestureHandlerRootView>
+       
     </DatabaseProvider>
-    
+
   );
 }
 

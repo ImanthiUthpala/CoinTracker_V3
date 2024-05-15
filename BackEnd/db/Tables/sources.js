@@ -6,19 +6,27 @@ async function createSourcesTable(tx) {
     tx.executeSqlAsync(
       `CREATE TABLE IF NOT EXISTS sources(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE
+        name TEXT NOT NULL UNIQUE,
+        icon TEXT,
+        color TEXT
       );`
     );
   });
 }
 
-async function insertSource(name) {
-  await openDatabase();
+async function insertSource(name,icon,color) {
+  try{
+    await openDatabase();
   await db.transactionAsync(async tx => {
     tx.executeSqlAsync(
-      `INSERT INTO sources (name) VALUES (?)`,[name]
+      `INSERT INTO sources (name, icon, color) VALUES (?,?,?)`,[name, icon, color]
     );
   });
+  console.log('Source added successfully!');
+  }catch (error) {
+    console.error('Error adding source:', error);
+  }
+  
 }
 
 async function getSources() {
@@ -40,6 +48,7 @@ async function getSourceById(id) {
       [id]
     );
   });
+  return results.rows._array[0]; // Later added, assuming only one source with that id
 }
 
 async function deleteSource(id){
@@ -52,11 +61,11 @@ async function deleteSource(id){
   });
 }
 
-async function updateSource(id, name){
+async function updateSource(id, name, icon, color){
   await openDatabase();
   await db.transactionAsync(async tx => {
     tx.executeSqlAsync(
-      `UPDATE sources SET name = ? WHERE id = ?`, [name, id], // bind parameters as an array
+      `UPDATE sources SET name = ?, icon = ?, color = ? WHERE id = ?`, [name, icon, color, id], // bind parameters as an array
       (tx, results) =>{
         if (results.rowsAffected > 0){
           console.log("Income source updated successfully");

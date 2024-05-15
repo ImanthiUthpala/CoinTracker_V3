@@ -24,7 +24,7 @@ const DatabaseProvider = ({children}) => { // serves as the provider for the Dat
       }
     };
     initializeDatabase();
-  }, []);
+  }, []); //Run only once after mount
   return (
     <DatabaseContext.Provider value={database}> 
       {children}
