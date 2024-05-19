@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 
 const DATABASE_NAME = 'coinTracker.db'
-let db;
+export const db = SQLite.openDatabase(DATABASE_NAME);
 
 async function openDatabase() {
 
@@ -23,9 +23,22 @@ async function openDatabase() {
   return db; // return the database connectin if already open
 }
 
+export const createTables = () =>{
+  db.transaction(tx =>{
+    tx.executeSql(
+      `CREATE TABLE IF NOT EXISTS sources (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        icon TEXT,
+        color TEXT
+      );`
+    );
+  });
+};
+
 function closeDatabase() {
   if (db) {
-    db.close().then(() => {
+    db._db.close().then(() => {
       console.log('Database closed successfully');
       db = null; // clear the reference for proper re-opening
     }).catch(error => {

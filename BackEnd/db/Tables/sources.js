@@ -1,7 +1,10 @@
 import { openDatabase } from '../database';
+import { db } from '../database'
 
-async function createSourcesTable(tx) {
-  await openDatabase();
+//const db = SQLite.openDatabase('coinTracker.db');
+/*
+async function createSourcesTable() {
+  await openDatabaseAsync();
   await db.transactionAsync(async tx => {
     tx.executeSqlAsync(
       `CREATE TABLE IF NOT EXISTS sources(
@@ -12,14 +15,15 @@ async function createSourcesTable(tx) {
       );`
     );
   });
-}
+} */
 
-async function insertSource(name,icon,color) {
+/*async function insertSource(name,icon,color) {
+  
   try{
-    await openDatabase();
+    await openDatabaseAsync();
   await db.transactionAsync(async tx => {
     tx.executeSqlAsync(
-      `INSERT INTO sources (name, icon, color) VALUES (?,?,?)`,[name, icon, color]
+      `INSERT INTO sources (name, icon, color) VALUES (?,?,?);`,[name, icon, color]
     );
   });
   console.log('Source added successfully!');
@@ -27,18 +31,53 @@ async function insertSource(name,icon,color) {
     console.error('Error adding source:', error);
   }
   
+}*/
+
+const insertSource = (name, icon, color, callback = () => {}) => {
+
+  try {
+    db.transaction(tx => {
+      tx.executeSql(
+        `INSERT INTO sources (name, icon, color) VALUES (?,?,?);`, [name, icon, color],
+        (_, result) => {
+          console.log('Source added successfully!');
+          callback(result);
+        },
+      );
+    });
+
+  } catch (error) {
+    console.error('Error adding source:', error);
+  }
 }
 
+const getSources = (callback = () => {}) => {
+  try {
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT * FROM sources;`, [],
+        (_, { rows: { _array } }) => {
+          callback(_array);
+        },
+      );
+    });
+    // const rows = results.rows._array; //convert reults to array of objects
+    //r return rows;
+  } catch (error) {
+    console.error('Error in getSource', error);
+  }
+}
+/*
 async function getSources() {
-  await openDatabase();
-  const results = await db.transactionAsync(async tx => {
+  await openDatabaseAsync();
+  const results = await (await db).transactionAsync(async tx => {
     return tx.executeSqlAsync(
       `SELECT * FROM sources`
     );
   });
   const rows = results.rows._array; //convert reults to array of objects
   return rows;
-}
+}*/
 
 async function getSourceById(id) {
   await openDatabase();
@@ -51,7 +90,7 @@ async function getSourceById(id) {
   return results.rows._array[0]; // Later added, assuming only one source with that id
 }
 
-async function deleteSource(id){
+async function deleteSource(id) {
   await openDatabase();
   await db.transactionAsync(async tx => {
     tx.executeSqlAsync(
@@ -61,16 +100,16 @@ async function deleteSource(id){
   });
 }
 
-async function updateSource(id, name, icon, color){
+async function updateSource(id, name, icon, color) {
   await openDatabase();
   await db.transactionAsync(async tx => {
     tx.executeSqlAsync(
       `UPDATE sources SET name = ?, icon = ?, color = ? WHERE id = ?`, [name, icon, color, id], // bind parameters as an array
-      (tx, results) =>{
-        if (results.rowsAffected > 0){
+      (tx, results) => {
+        if (results.rowsAffected > 0) {
           console.log("Income source updated successfully");
         }
-        else{
+        else {
           console.error("Error updating income source");
         }
       }
@@ -78,4 +117,4 @@ async function updateSource(id, name, icon, color){
   });
 }
 
-export {createSourcesTable, insertSource, getSources, getSourceById, deleteSource, updateSource};
+export { insertSource, getSources, getSourceById, deleteSource, updateSource };

@@ -1,5 +1,5 @@
 import React, {createContext, useState, useEffect} from "react";
-import { openDatabase, closeDatabase } from './database';
+import { createTables, openDatabase, closeDatabase } from './database';
 
 
 
@@ -18,6 +18,7 @@ const DatabaseProvider = ({children}) => { // serves as the provider for the Dat
       try{
         const db = await openDatabase();
         setDatabase(db);
+        createTables();
       }
       catch(error){
         console.error('Error initializing database:', error);

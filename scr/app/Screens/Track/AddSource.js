@@ -15,11 +15,12 @@ export const AddSource = () => {
 
   const [selectedIcon, setSelectedIcon] = useState('IC');
   const [selectedColor, setSelectedColor] = useState(Colors.PURPLE);
-  const [sourceName, setSourceName] = useState();
+  const [sourceName, setSourceName] = useState('');
 
   //to save data
 
-  const db = useContext(DatabaseContext);
+  //const db = useContext(DatabaseContext);
+
   const onCreateSource = async()=>{
 
     
@@ -30,12 +31,14 @@ export const AddSource = () => {
 
     try {
       // Call the insertSource function with the collected data
-      await insertSource(sourceName, selectedIcon, selectedColor);
-      console.log('Source added successfully!');
+      insertSource(sourceName, selectedIcon, selectedColor, () =>{
+        console.log('Source added successfully!');
       // Optionally, clear the form after successful insertion
       setSourceName('');
       setSelectedIcon('IC');
       setSelectedColor(Colors.PURPLE);
+      });
+      
     } catch (error) {
       console.error('Error adding source:', error);
     }
@@ -54,9 +57,8 @@ export const AddSource = () => {
           style={[styles.iconInput, { backgroundColor: selectedColor }]}
           maxLength={2}
           onChangeText={(value) => setSelectedIcon(value)}
-        >
-          {selectedIcon}
-        </TextInput>
+          value={selectedIcon}
+        />
         <ColorPicker
           selectedColor={selectedColor}
           setSelectedColor={(color) => setSelectedColor(color)}
@@ -65,8 +67,10 @@ export const AddSource = () => {
       {/*add source name */}
       <View style={styles.inputView}>
         <MaterialCommunityIcons name="label-multiple" size={24} color={Colors.GRAY} />
-        <TextInput placeholder='Source Name'
-        onChangeText={(value)=>setSourceName(value)}
+        <TextInput
+        placeholder='Source Name'
+        value={sourceName}
+        onChangeText={(value) => setSourceName(value)}
           style={{
             width: '100%',
             fontSize: 17
@@ -74,7 +78,7 @@ export const AddSource = () => {
       </View>
           <TouchableOpacity style={styles.button}
           disabled={!sourceName}
-          onPress={()=>onCreateSource()}
+          onPress={onCreateSource}
           >
             <Text style={{textAlign:'center',
               fontSize:20,
