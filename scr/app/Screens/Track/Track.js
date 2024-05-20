@@ -14,13 +14,11 @@ import {AddSource} from './AddSource';
 const TrackTab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
 
-function SourceStack(){
+function SourceStack({navigation}){
   return(
-    <Stack.Navigator screenOptions={{
-      headerShown:false
-    }}>
+    <Stack.Navigator>
       <Stack.Screen
-        name="SourceStack"
+        name="Source"
         component={Source}
         options={{
           headerShown:false
@@ -31,7 +29,8 @@ function SourceStack(){
         component={AddSource}
         options={{
           presentation:'modal',
-          headerShown:true
+          headerShown:true,
+          headerTitle: 'Add Source',
           }
         }
         />
@@ -41,23 +40,27 @@ function SourceStack(){
 
 function IncomeStack(){
   return(
-    <Stack.Navigator screenOptions={{
-      headerShown:false
-    }}>
+    <Stack.Navigator >
       <Stack.Screen
-        name="IncomeStack"
+        name="IncomeScreen"
         component={Income}
         options={{
-          headerShown:false
+          headerShown:true,
+          headerTile: 'Income',
+          
         }}
         />
       <Stack.Screen
-        name="Source"
+        name="SourceStack"
         component={SourceStack}
-        options={{
-          presentation:'modal',
-          headerShown:true
-          }
+        options={({route}) =>{
+          //Dynamically determine if the AddSource screen is shown
+          const isAddSource = route.state?.routes.some(r => r.name === 'AddSource');
+          return {
+            headerShown: true,
+            headerTitle: isAddSource ? 'Add Source' : 'Source',
+          };
+        }
         }
         />
     </Stack.Navigator>
