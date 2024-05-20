@@ -31,13 +31,13 @@ export const AddSource = () => {
 
     try {
       // Call the insertSource function with the collected data
-      insertSource(sourceName, selectedIcon, selectedColor, () =>{
+      await insertSource(sourceName, selectedIcon, selectedColor);
         console.log('Source added successfully!');
       // Optionally, clear the form after successful insertion
       setSourceName('');
       setSelectedIcon('IC');
       setSelectedColor(Colors.PURPLE);
-      });
+      
       
     } catch (error) {
       console.error('Error adding source:', error);
@@ -56,8 +56,8 @@ export const AddSource = () => {
         <TextInput
           style={[styles.iconInput, { backgroundColor: selectedColor }]}
           maxLength={2}
-          onChangeText={(value) => setSelectedIcon(value)}
           value={selectedIcon}
+          onChangeText={(value) => setSelectedIcon(value)}
         />
         <ColorPicker
           selectedColor={selectedColor}
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     display: 'flex',
     flexDirection: 'row',
-    gap: 5,
+    gap: 6,
     padding: 14,
     borderRadius: 10,
     borderColor: Colors.GRAY,

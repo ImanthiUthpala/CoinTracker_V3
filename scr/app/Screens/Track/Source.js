@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import SourceList from '../../components/SourceList';
@@ -18,15 +18,19 @@ export const Source = () => {
     navigation.navigate('AddSource');
   };
 
-  const [sources,setSources] = useState([]);
+  const [sourceList, setSourceList] = useState([]);
  // const db = useContext(DatabaseContext);
 
-  const fetchSources = async () => {
+  const fetchSourceList = async () => {
 
     try {
       // Call the insertSource function with the collected data
-      const data = await getSources();
-        setSources(data);
+      const data = await new Promise ((resolve, reject) => {
+        getSources((result) => {
+          resolve(result);
+        });
+      });
+        setSourceList(data);
         console.log('Source fetch successfully!', data);
   
     } catch (error) {
@@ -37,17 +41,22 @@ export const Source = () => {
   useEffect(()=>{
     //Fetch source on component mount
     if(isFocused){
-      fetchSources();
+      fetchSourceList();
     }
    
   }, [isFocused]); // Empty dependency array: runs only once on mount
 
   return (
+    <>
     <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.ScrollViewContent}>
+      <SourceList sourceList={sourceList}/>
 
-      <SourceList sourceList={sources}/>
+      </ScrollView>
 
-      <View style={styles.bottomContainer}>
+      {/*<View style={styles.bottomContainer}> */}
+
+       {/* <SourceList sourceList={sourceList} /> */} 
 
         <TouchableOpacity
           onPress={handlePress}
@@ -56,12 +65,21 @@ export const Source = () => {
           <Ionicons name="add-circle-sharp" size={60} color="#82E80B" />
         </TouchableOpacity>
 
-      </View>
+      {/*</View> */}
     </View>
+   
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  container:{
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  ScrollViewContent:{
+    paddingBottom: 100,
+  },
   bottomContainer: {
     height: 1000,
     width: '100%',
@@ -72,7 +90,7 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     position:'absolute',
-    top:350,
+    top:480,
     right:5,
 
   }

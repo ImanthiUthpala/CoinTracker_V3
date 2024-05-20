@@ -23,17 +23,27 @@ async function openDatabase() {
   return db; // return the database connectin if already open
 }
 
-export const createTables = () =>{
-  db.transaction(tx =>{
-    tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS sources (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
-        icon TEXT,
-        color TEXT
-      );`
-    );
+export const createTables = async () =>{
+  return new Promise ((resolve, reject) =>{
+    db.transaction(tx =>{
+      tx.executeSql(
+        `CREATE TABLE IF NOT EXISTS sources (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE,
+          icon TEXT,
+          color TEXT
+        );`,
+        [],
+        () =>{
+          resolve();
+        },
+        (_, error) => {
+          reject(error);
+        }
+      );
+    });
   });
+
 };
 
 function closeDatabase() {

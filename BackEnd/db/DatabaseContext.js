@@ -18,7 +18,7 @@ const DatabaseProvider = ({children}) => { // serves as the provider for the Dat
       try{
         const db = await openDatabase();
         setDatabase(db);
-        createTables();
+        await createTables();
       }
       catch(error){
         console.error('Error initializing database:', error);

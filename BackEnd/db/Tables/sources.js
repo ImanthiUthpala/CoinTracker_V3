@@ -55,7 +55,7 @@ const getSources = (callback = () => {}) => {
   try {
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT * FROM sources;`, [],
+        `SELECT name, icon, color FROM sources;`, [],  //removed *
         (_, { rows: { _array } }) => {
           callback(_array);
         },
@@ -65,6 +65,7 @@ const getSources = (callback = () => {}) => {
     //r return rows;
   } catch (error) {
     console.error('Error in getSource', error);
+    callback([]);
   }
 }
 /*
