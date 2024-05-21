@@ -3,9 +3,10 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList, ScrollView } from '
 import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import SourceList from '../../components/SourceList';
-import { getSources } from '../../../../BackEnd/db/Tables/sources';
+import { deleteSource, getSources } from '../../../../BackEnd/db/Tables/sources';
 import { DatabaseContext } from '../../../../BackEnd/db/DatabaseContext'
 import database from '../../../../BackEnd/db/database';
+import Colors from '../../../../assets/Colors';
 
 
 
@@ -38,19 +39,30 @@ export const Source = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    try{
+       await deleteSource(id); //delete from database
+       const updatedList = sourceList.filter((source) => source.id !== id); //Filter out deleted source
+       setSourceList(updatedList); // update state with filtered list
+      console.log('Source deleted sss');
+    }catch (error){
+      console.error('Error deleting source from source screen:', error);
+    }
+  };
+
   useEffect(()=>{
     //Fetch source on component mount
     if(isFocused){
       fetchSourceList();
     }
    
-  }, [isFocused]); // Empty dependency array: runs only once on mount
+  }, [isFocused]); // Empty dependency array: runs only once on mount 
 
   return (
     <>
     <View style={styles.container}>
     <ScrollView contentContainerStyle={styles.ScrollViewContent}>
-      <SourceList sourceList={sourceList}/>
+      <SourceList sourceList={sourceList} handleDelete={handleDelete}/>
 
       </ScrollView>
 
@@ -75,15 +87,16 @@ export const Source = () => {
 const styles = StyleSheet.create({
   container:{
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor:  Colors.GRAY,
+    height:'100%'
   },
   ScrollViewContent:{
     paddingBottom: 100,
   },
   bottomContainer: {
-    height: 1000,
+    height: 1,
     width: '100%',
-    backgroundColor: '#fff',
+    backgroundColor:'#fff',
     marginTop: 50,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,

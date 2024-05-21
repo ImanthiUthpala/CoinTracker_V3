@@ -55,7 +55,7 @@ const getSources = (callback = () => {}) => {
   try {
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT name, icon, color FROM sources;`, [],  //removed *
+        `SELECT * FROM sources;`, [],  //removed *
         (_, { rows: { _array } }) => {
           callback(_array);
         },
@@ -84,28 +84,32 @@ async function getSourceById(id) {
   await openDatabase();
   const results = await db.transactionAsync(async tx => {
     return tx.executeSqlAsync(
-      `SELECT * FROM sources WHERE id = ?`,
+      `SELECT * FROM sources WHERE id = ?;`,
       [id]
     );
   });
   return results.rows._array[0]; // Later added, assuming only one source with that id
 }
 
-async function deleteSource(id) {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `DELETE FROM sources WHERE id = ?`,
-      [id]
-    );
-  });
+const deleteSource = (id, callback = () => {}) => {
+  try{
+     db.transactionAsync(async tx => {
+      tx.executeSqlAsync(
+        `DELETE FROM sources WHERE id = ?;`,
+        [id]
+      );
+    });
+  }catch (error) {
+    console.error('Error in deleting Source', error);
+    callback([]);
+  }  
 }
 
 async function updateSource(id, name, icon, color) {
   await openDatabase();
   await db.transactionAsync(async tx => {
     tx.executeSqlAsync(
-      `UPDATE sources SET name = ?, icon = ?, color = ? WHERE id = ?`, [name, icon, color, id], // bind parameters as an array
+      `UPDATE sources SET name = ?, icon = ?, color = ? WHERE id = ?;`, [name, icon, color, id], // bind parameters as an array
       (tx, results) => {
         if (results.rowsAffected > 0) {
           console.log("Income source updated successfully");
