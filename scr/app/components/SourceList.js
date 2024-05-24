@@ -4,11 +4,18 @@ import Colors from '../../../assets/Colors';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { deleteSource } from '../../../BackEnd/db/Tables/sources';
+import { useNavigation } from '@react-navigation/native';
 
 
 
 
 const SourceList = ({ sourceList, handleDelete }) => {
+
+  const navigation = useNavigation();
+
+  const handleEdit = (id, source) => {
+   navigation.navigate('UpdateSource', {source});
+  }
 
   return (
     /*<View>
@@ -52,7 +59,9 @@ const SourceList = ({ sourceList, handleDelete }) => {
               <View style={styles.cardEdit}>
 
                 <View >
-                  <TouchableOpacity >
+                  <TouchableOpacity 
+                    onPress={() => handleEdit(source.id, source)}
+                  >
                     <FontAwesome6 name="edit" size={24} color="black" />
 
                   </TouchableOpacity>
@@ -95,7 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
     padding: 10,
     borderRadius: 15,
-    height: 80
+    height: 80,
   },
   iconContainer: {
     justifyContent: 'center',
@@ -105,6 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     padding: 16,
     borderRadius: 15,
+    width:60,
   },
   sourceText: {
     fontSize: 18,

@@ -1,30 +1,72 @@
 import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native'
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 
 import Colors from '../../../../assets/Colors'
 import ColorPicker from '../../components/ColorPicker'
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { insertSource } from '../../../../BackEnd/db/Tables/sources'
+//import { updateSource } from '../../../../BackEnd/db/Tables/sources'
+import { updateSource, getSourceById } from '../../../../BackEnd/db/Tables/sources'
 import { DatabaseContext } from '../../../../BackEnd/db/DatabaseContext'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 
 
-
-export const AddSource = () => {
+//const source = getSources;
+export const UpdateSource = () => {
 
   const navigation = useNavigation();
+  const route = useRoute()
+  const {source} = route.params;
 
-  const [selectedIcon, setSelectedIcon] = useState('IC');
+  const [selectedIcon, setSelectedIcon] = useState('');
   const [selectedColor, setSelectedColor] = useState(Colors.PURPLE);
   const [sourceName, setSourceName] = useState('');
+
+  useEffect (() => {
+    if (source) {
+      setSelectedIcon(source.icon || '');
+      setSelectedColor(source.color || Colors.PURPLE);
+      setSourceName(source.name || '');
+    }
+  }, [source]);
+
+ /* const [selectedIcon, setSelectedIcon] = useState(source?.icon || '');
+  const [selectedColor, setSelectedColor] = useState(source?.color || Colors.PURPLE);
+  const [sourceName, setSourceName] = useState(source?.nsme || ''); */
 
   //to save data
 
   //const db = useContext(DatabaseContext);
 
-  const onCreateSource = async()=>{
+  /*useEffect(() =>{
+    const fetchSource = async ()=>{
+      try{
+        const sourceData = await getSourceById(id);
+        setSource(sourceData);
+      }catch (error){
+        console.error('Error fetching source data:', error);
+      }
+    };
+
+    fetchSource();
+  }, [id]); */
+
+  const handleEdit = async () => {
+    if (!sourceName) {
+      console.error('Please enter a source name');
+      return;
+    }
+    try{
+      updateSource(source.id, sourceName, selectedIcon, selectedColor);
+      console.log('Source updated successfully');
+      navigation.goBack();
+    }catch (error){
+      console.error('Error updating source:', error);
+    }
+  };
+
+  /*const onaUpdateSource = async()=>{
 
     
     if (!sourceName) {
@@ -34,19 +76,18 @@ export const AddSource = () => {
 
     try {
       // Call the insertSource function with the collected data
-      insertSource(sourceName, selectedIcon, selectedColor);
-        console.log('Source added successfully!');
-        navigation.goBack();
-      // Optionally, clear the form after successful insertion
+      updateSource(source.id, sourceName, selectedIcon, selectedColor);
+        console.log('Source updated successfully!');
+      // Optionally, clear the form after successful edit
       setSourceName('');
       setSelectedIcon('IC');
       setSelectedColor(Colors.PURPLE);
       
       
     } catch (error) {
-      console.error('Error adding source:', error);
+      console.error('Error editing source:', error);
     }
-  };
+  }; */
 
   return (
     <View style={{
@@ -62,11 +103,12 @@ export const AddSource = () => {
           maxLength={2}
           minLength={2}
           value={selectedIcon}
-          onChangeText={(value) => setSelectedIcon(value)}
+          onChangeText={setSelectedIcon}
         />
         <ColorPicker
-          selectedColor={selectedColor}
-          setSelectedColor={(color) => setSelectedColor(color)}
+         selectedColor={selectedColor}
+         setSelectedColor={setSelectedColor}
+          
         />
       </View>
       {/*add source name */}
@@ -75,20 +117,20 @@ export const AddSource = () => {
         <TextInput
         placeholder='Source Name'
         value={sourceName}
-        onChangeText={(value) => setSourceName(value)}
+        onChangeText={setSourceName}
           style={{
             width: '100%',
             fontSize: 17
           }} />
       </View>
           <TouchableOpacity style={styles.button}
-          disabled={!sourceName}
-          onPress={onCreateSource}
+          disabled={!source.name}
+          onPress={handleEdit}
           >
             <Text style={{textAlign:'center',
               fontSize:20,
               color:Colors.WHITE
-            }}>Add Source</Text>
+            }}>Edit Source</Text>
           </TouchableOpacity>
     </View>
   )

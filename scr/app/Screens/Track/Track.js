@@ -9,6 +9,7 @@ import {Income} from "./Income";
 import {Expense} from "./Expense";
 import { Source } from './Source';
 import {AddSource} from './AddSource';
+import {UpdateSource} from './UpdateSource';
 
 
 const TrackTab = createMaterialTopTabNavigator();
@@ -29,6 +30,15 @@ function SourceStack(){
       <Stack.Screen
         name="AddSource"
         component={AddSource}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+        <Stack.Screen
+        name="UpdateSource"
+        component={UpdateSource}
         options={{
           presentation:'modal',
           headerShown:true

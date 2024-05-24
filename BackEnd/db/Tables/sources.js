@@ -80,15 +80,27 @@ async function getSources() {
   return rows;
 }*/
 
-async function getSourceById(id) {
-  await openDatabase();
-  const results = await db.transactionAsync(async tx => {
+const getSourceById = (id, callback = () =>{}) => {
+  try{
+    db.transaction (tx => {
+      tx.executeSql(
+        `SELECT * FROM sources WHERE id = ?;`,
+        [id],
+        (_, {rows: {_array} }) => {
+          callback(_array[0]);
+        },
+      );
+    });
+  } catch (error){
+      console.error('Error fetching source by id: ', error)
+  }
+  /*const results = await db.transactionAsync(async tx => {
     return tx.executeSqlAsync(
       `SELECT * FROM sources WHERE id = ?;`,
       [id]
     );
   });
-  return results.rows._array[0]; // Later added, assuming only one source with that id
+  return results.rows._array[0]; // Later added, assuming only one source with that id */
 }
 
 const deleteSource = (id, callback = () => {}) => {
@@ -105,21 +117,26 @@ const deleteSource = (id, callback = () => {}) => {
   }  
 }
 
-async function updateSource(id, name, icon, color) {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `UPDATE sources SET name = ?, icon = ?, color = ? WHERE id = ?;`, [name, icon, color, id], // bind parameters as an array
-      (tx, results) => {
-        if (results.rowsAffected > 0) {
-          console.log("Income source updated successfully");
-        }
-        else {
-          console.error("Error updating income source");
-        }
-      }
-    );
-  });
+const updateSource = (id, name, icon, color, callback = () => {}) => {
+    try{
+      db.transaction( tx => {
+        tx.executeSql(
+          `UPDATE sources SET name = ?, icon = ?, color = ? WHERE id = ?;`, [name, icon, color, id], // bind parameters as an array
+          (_, result) => {
+            if(result.rowsAffected > 0){
+              console.log('Source updated successfully');
+              callback(result);
+            }else{
+              console.error("Error updating source");
+            }
+           
+          },
+        );
+      });
+    } catch(error){
+      console.error('Erroro in updating', error);
+    }
+  
 }
 
 export { insertSource, getSources, getSourceById, deleteSource, updateSource };

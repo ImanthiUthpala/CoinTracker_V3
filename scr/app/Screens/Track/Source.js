@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import SourceList from '../../components/SourceList';
@@ -41,7 +41,7 @@ export const Source = () => {
 
   const handleDelete = async (id) => {
     try{
-       await deleteSource(id); //delete from database
+       deleteSource(id); //delete from database
        const updatedList = sourceList.filter((source) => source.id !== id); //Filter out deleted source
        setSourceList(updatedList); // update state with filtered list
       console.log('Source deleted sss');
@@ -74,7 +74,7 @@ export const Source = () => {
           onPress={handlePress}
           style={styles.addBtn}
         >
-          <Ionicons name="add-circle-sharp" size={60} color="#82E80B" />
+          <Ionicons name="add-circle-sharp" size={60} color={Colors.GREEN} />
         </TouchableOpacity>
 
       {/*</View> */}
@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
     position:'absolute',
     top:480,
     right:5,
+  
 
   }
 });
