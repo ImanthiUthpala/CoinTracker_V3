@@ -40,14 +40,33 @@ export const Source = () => {
   };
 
   const handleDelete = async (id) => {
-    try{
-       deleteSource(id); //delete from database
-       const updatedList = sourceList.filter((source) => source.id !== id); //Filter out deleted source
-       setSourceList(updatedList); // update state with filtered list
-      console.log('Source deleted sss');
-    }catch (error){
-      console.error('Error deleting source from source screen:', error);
-    }
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this source?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Deletion cancelted'),
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            try{
+              deleteSource(id); //delete from database
+              const updatedList = sourceList.filter((source) => source.id !== id); //Filter out deleted source
+              setSourceList(updatedList); // update state with filtered list
+             console.log('Source deleted sss');
+           }catch (error){
+             console.error('Error deleting source from source screen:', error);
+           }
+          },
+          style: 'destructive',
+        },
+      ],
+      {cancelable: false}
+    );
+   
   };
 
   useEffect(()=>{

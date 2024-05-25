@@ -17,6 +17,12 @@ const SourceList = ({ sourceList, handleDelete }) => {
    navigation.navigate('UpdateSource', {source});
   }
 
+  const hadleIncome = (sourceId) => {
+    navigation.navigate('AddIncome', {sourceId});
+  }
+
+  
+
   return (
     /*<View>
       {sourceList?.length > 0 && (
@@ -43,7 +49,12 @@ const SourceList = ({ sourceList, handleDelete }) => {
       {sourceList?.length > 0 && (
         <View>
           {sourceList.map((source, index) => (
-            <View key={index} style={styles.container}>
+
+            <TouchableOpacity 
+            key={index} 
+            style={styles.container}
+            onPress={() => hadleIncome(source.id)}>
+
               <View style={styles.iconContainer}>
                 {source.icon && (
                   <Text style={[styles.iconText, { backgroundColor: source?.color }]}>
@@ -81,7 +92,7 @@ const SourceList = ({ sourceList, handleDelete }) => {
 
               </View>
 
-      </View>
+      </TouchableOpacity>
       ))}
     </View>
   )

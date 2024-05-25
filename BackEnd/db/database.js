@@ -34,11 +34,27 @@ export const createTables = async () =>{
           color TEXT
         );`,
         [],
+        () => {
+          tx.executeSql(
+            `CREATE TABLE IF NOT EXISTS income (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              amount REAL NOT NULL,
+              date TEXT NOT NULL,
+              source_id INTEGER NOT NULL,
+              FOREIGN KEY (source_id) REFERENCES sources(id)
+            );`,
+            [],
+        
         () =>{
           resolve();
         },
         (_, error) => {
           reject(error);
+        }
+      );
+    },
+    (_, error) => {
+      reject(error);
         }
       );
     });
