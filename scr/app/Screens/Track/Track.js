@@ -11,6 +11,7 @@ import { Source } from './Source';
 import {AddSource} from './AddSource';
 import {UpdateSource} from './UpdateSource';
 import {AddIncome} from './AddIncome';
+import {UpdateIncome} from './UpdateIncome';
 
 
 const TrackTab = createMaterialTopTabNavigator();
@@ -55,6 +56,7 @@ function SourceStack(){
           }
         }
         />
+       
     </Stack.Navigator>
   );
 }
@@ -75,6 +77,15 @@ function IncomeStack(){
         options={{
           presentation:'modal',
           headerShown:false
+          }
+        }
+        />
+         <Stack.Screen
+        name="UpdateIncome"
+        component={UpdateIncome}
+        options={{
+          presentation:'modal',
+          headerShown:true
           }
         }
         />

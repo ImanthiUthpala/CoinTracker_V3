@@ -36,20 +36,28 @@ const insertIncome = (amount, date, sourceId) => {
 
 } ;
 
-const getIncome = (callback) => {
-  
-  db.transaction(tx =>{
-    tx.executeSql(
-      `SELECT income.*, sources.name as sourceName FROM income JOIN sources ON income.source_id =source.id ORDER BY date DESC;`,
-      [],
-      (tx, results) => {
-        const rows = results.rows._array;
-        callback(rows);
-      },
-      (tx, error) =>{
-        console.error('Error fetching incomes: ', error);
-      }
-    );
+const getIncome = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT income.*, sources.name as sourceName, sources.icon as sourceIcon, sources.color as sourceColor
+        FROM income 
+        JOIN sources ON income.source_id = sources.id 
+        ORDER BY date DESC;`,
+        [],
+        (tx, results) => {
+          const rows = results.rows._array;
+          //Filter out records with invalid amount
+          const validRows = rows.filter(item => !isNaN(parseFloat(item.amount)));
+          console.log('Valid Income data:', validRows); //Debugging statement
+          resolve(validRows);
+        },
+        (tx, error) => {
+          console.error('Error fetching incomes: ', error);
+          reject(error);
+        }
+      );
+    });
   });
 };
 
@@ -71,19 +79,29 @@ const getTotalIncome = () => {
   });
 };
 
-async function getIncomeById(id) {
-  await openDatabase();
-  const results = await db.transactionAsync(async tx => {
-    return tx.executeSqlAsync(
-      `SELECT * FROM income WHERE id = ?`,
-      [id]
-    );
+const getIncomeById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT * FROM income WHERE id = ?;`,
+        [id],
+        (tx, results) => {
+          if (results.rows.length > 0){
+            resolve(results.rows.item(0)); //return the first result
+          } else {
+            reject('NO income found with the provided ID');
+          }
+        },
+        (error) =>{
+          reject(error);
+        }
+      );
+    });
   });
-  const row = results.rows.length > 0 ? results.rows._array[0] : null;
-  return row;
-}
+ 
+};
 
-const updateIncome = (id, amount, date, sourceId) => {
+/*const updateIncome = (id, amount, date, sourceId) => {
   return new Promise ((resolve, reject) => {
     db.transaction( tx => {
       tx.executeSql(
@@ -99,7 +117,30 @@ const updateIncome = (id, amount, date, sourceId) => {
     });
   });
   
-};
+};*/
+
+const updateIncome = (id, amount, date, sourceId, callback = () => {}) => {
+  try{
+    db.transaction( tx => {
+      tx.executeSql(
+        `UPDATE income SET amount = ?, date = ?, source_id = ? WHERE id = ?;`,
+        [amount, date, sourceId, id], // bind parameters as an array
+        (_, result) => {
+          if(result.rowsAffected > 0){
+            console.log('Source updated successfully');
+            callback(result);
+          }else{
+            console.error("Error updating source");
+          }
+         
+        },
+      );
+    });
+  } catch(error){
+    console.error('Erroro in updating', error);
+  }
+
+}
 
 const deleteIncome = (id) => {
   return new Promise ((resolve, reject) => {

@@ -16,8 +16,8 @@ export const AddIncome = ({ route, navigation }) => {
     try {
       await insertIncome(amount, date.toISOString(), sourceId );
       console.log('Income added successfully!');
-      navigation.navigate('Income');
-      //navigation.goBack();
+      //navigation.navigate('Income');
+      navigation.goBack();
     } catch (error) {
       console.error('Error adding income:', error);
     }

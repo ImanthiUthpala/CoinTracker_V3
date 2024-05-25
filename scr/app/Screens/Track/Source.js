@@ -106,7 +106,7 @@ export const Source = () => {
 const styles = StyleSheet.create({
   container:{
     flex: 1,
-    backgroundColor:  Colors.GRAY,
+    backgroundColor:  Colors.WHITE,
     height:'100%'
   },
   ScrollViewContent:{
