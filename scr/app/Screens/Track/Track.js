@@ -11,6 +11,12 @@ import {AddSource} from './AddSource';
 import {UpdateSource} from './UpdateSource';
 import {AddIncome} from './AddIncome';
 import {UpdateIncome} from './UpdateIncome';
+import {Category} from './Category';
+import {AddCategory} from './AddCategory';
+import {UpdateCategory} from './UpdateCategory';
+import {AddExpense} from './AddExpense';
+import {UpdateExpense} from './UpdateExpense';
+
 
 
 const TrackTab = createMaterialTopTabNavigator();
@@ -92,13 +98,89 @@ function IncomeStack(){
   );
 }
 
+function CategoryStack(){
+  return(
+    <Stack.Navigator screenOptions={{
+      headerShown:false
+    }}>
+      <Stack.Screen
+        name="CategoryStack"
+        component={Category}
+        options={{
+          headerShown:true
+        }}
+        />
+      <Stack.Screen
+        name="AddCategory"
+        component={AddCategory}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+        <Stack.Screen
+        name="UpdateCategory"
+        component={UpdateCategory}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+         <Stack.Screen
+        name="AddExpense"
+        component={AddExpense}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+       
+    </Stack.Navigator>
+  );
+}
+
+function ExpenseStack(){
+  return(
+    <Stack.Navigator >
+      <Stack.Screen
+        name="ExpenseStack"
+        component={Expense}
+        options={{
+          headerShown:false
+        }}
+        />
+      <Stack.Screen
+        name="Category"
+        component={CategoryStack}
+        options={{
+          presentation:'modal',
+          headerShown:false
+          }
+        }
+        />
+         <Stack.Screen
+        name="UpdateExpense"
+        component={UpdateExpense}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+    </Stack.Navigator>
+  );
+}
+
 
 export const Track = () => {
   return (
     <SafeAreaProvider>
       <TrackTab.Navigator>
       <TrackTab.Screen name="Income" component={IncomeStack} />
-      <TrackTab.Screen name="Expense" component={Expense} />
+      <TrackTab.Screen name="Expense" component={ExpenseStack} />
 
       
 
