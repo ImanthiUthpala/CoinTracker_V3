@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Colors from '../../../../assets/Colors';
 import { insertIncome } from '../../../../BackEnd/db/Tables/income';
+import {Income} from './Income';
 
 
 export const AddIncome = ({ route, navigation }) => {

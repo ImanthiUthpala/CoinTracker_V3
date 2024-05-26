@@ -17,10 +17,6 @@ const IncomeList = ({ incomeList, handleDelete}) => {
    
    };
 
-   /*const handleEdit = (id,income) => {
-    navigation.navigate('UpdateIncome', {income});
-   }*/
-
   return (
     <View>
       {incomeList?.length > 0 && (

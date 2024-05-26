@@ -1,21 +1,4 @@
-import { openDatabase } from '../database';
 import { db } from '../database'
-
-/*
-async function createIncomeTable() {
-  await openDatabase();
-  await db.transactionAsync(async tx =>{
-    tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS income (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        amount REAL NOT NULL,
-        date TEXT NOT NULL,
-        source_id INTEGER NOT NULL,
-        FOREIGN KEY (source_id) REFERENCES sources(id)
-      );`
-    );
-  });
-} */
 
 const insertIncome = (amount, date, sourceId) => {
   return new Promise((resolve, reject) => {
@@ -100,24 +83,6 @@ const getIncomeById = (id) => {
   });
  
 };
-
-/*const updateIncome = (id, amount, date, sourceId) => {
-  return new Promise ((resolve, reject) => {
-    db.transaction( tx => {
-      tx.executeSql(
-        `UPDATE income SET amount = ?, date = ?, source_id = ? WHERE id = ?;`,
-        [amount, date, sourceId, id],
-        (_, result) => {
-          resolve(result);
-        },
-        (_, error) => {
-          reject (error);
-        }
-      );
-    });
-  });
-  
-};*/
 
 const updateIncome = (id, amount, date, sourceId, callback = () => {}) => {
   try{

@@ -1,37 +1,5 @@
-import { openDatabase } from '../database';
 import { db } from '../database'
 
-//const db = SQLite.openDatabase('coinTracker.db');
-/*
-async function createSourcesTable() {
-  await openDatabaseAsync();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `CREATE TABLE IF NOT EXISTS sources(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
-        icon TEXT,
-        color TEXT
-      );`
-    );
-  });
-} */
-
-/*async function insertSource(name,icon,color) {
-  
-  try{
-    await openDatabaseAsync();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `INSERT INTO sources (name, icon, color) VALUES (?,?,?);`,[name, icon, color]
-    );
-  });
-  console.log('Source added successfully!');
-  }catch (error) {
-    console.error('Error adding source:', error);
-  }
-  
-}*/
 
 const insertSource = (name, icon, color, callback = () => {}) => {
 
@@ -55,30 +23,17 @@ const getSources = (callback = () => {}) => {
   try {
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT * FROM sources;`, [],  //removed *
+        `SELECT * FROM sources;`, [], 
         (_, { rows: { _array } }) => {
           callback(_array);
         },
       );
     });
-    // const rows = results.rows._array; //convert reults to array of objects
-    //r return rows;
   } catch (error) {
     console.error('Error in getSource', error);
     callback([]);
   }
 }
-/*
-async function getSources() {
-  await openDatabaseAsync();
-  const results = await (await db).transactionAsync(async tx => {
-    return tx.executeSqlAsync(
-      `SELECT * FROM sources`
-    );
-  });
-  const rows = results.rows._array; //convert reults to array of objects
-  return rows;
-}*/
 
 const getSourceById = (id, callback = () =>{}) => {
   try{
@@ -94,13 +49,6 @@ const getSourceById = (id, callback = () =>{}) => {
   } catch (error){
       console.error('Error fetching source by id: ', error)
   }
-  /*const results = await db.transactionAsync(async tx => {
-    return tx.executeSqlAsync(
-      `SELECT * FROM sources WHERE id = ?;`,
-      [id]
-    );
-  });
-  return results.rows._array[0]; // Later added, assuming only one source with that id */
 }
 
 const deleteSource = (id, callback = () => {}) => {

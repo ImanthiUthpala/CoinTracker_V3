@@ -29,7 +29,7 @@ export const UpdateIncome = ({ route, navigation }) => {
 
   const handleUpdateIncome = async () => {
     try {
-      await updateIncome(incomeId, amount, date.toISOString(), sourceId);
+      updateIncome(incomeId, amount, date.toISOString(), sourceId);
       console.log('Income updated successfully!');
       navigation.goBack();
     } catch (error) {
@@ -100,4 +100,4 @@ const styles = StyleSheet.create({
   },
 });
 
-//export default UpdateIncome;
+

@@ -1,11 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState,useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import SourceList from '../../components/SourceList';
 import { deleteSource, getSources } from '../../../../BackEnd/db/Tables/sources';
-import { DatabaseContext } from '../../../../BackEnd/db/DatabaseContext'
-import database from '../../../../BackEnd/db/database';
 import Colors from '../../../../assets/Colors';
 
 
@@ -20,7 +18,6 @@ export const Source = () => {
   };
 
   const [sourceList, setSourceList] = useState([]);
- // const db = useContext(DatabaseContext);
 
   const fetchSourceList = async () => {
 
@@ -85,10 +82,6 @@ export const Source = () => {
 
       </ScrollView>
 
-      {/*<View style={styles.bottomContainer}> */}
-
-       {/* <SourceList sourceList={sourceList} /> */} 
-
         <TouchableOpacity
           onPress={handlePress}
           style={styles.addBtn}
@@ -96,7 +89,6 @@ export const Source = () => {
           <Ionicons name="add-circle-sharp" size={60} color={Colors.GREEN} />
         </TouchableOpacity>
 
-      {/*</View> */}
     </View>
    
     </>

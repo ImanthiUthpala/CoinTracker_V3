@@ -7,7 +7,6 @@ import ColorPicker from '../../components/ColorPicker'
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { insertSource } from '../../../../BackEnd/db/Tables/sources'
-import { DatabaseContext } from '../../../../BackEnd/db/DatabaseContext'
 import { useNavigation } from '@react-navigation/native'
 
 

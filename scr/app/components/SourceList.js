@@ -1,9 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Colors from '../../../assets/Colors';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { deleteSource } from '../../../BackEnd/db/Tables/sources';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -24,26 +23,6 @@ const SourceList = ({ sourceList, handleDelete }) => {
   
 
   return (
-    /*<View>
-      {sourceList?.length > 0 && (
-        <View>
-          {sourceList.map((source, index) => (
-            <View key={index} style={styles.container}>
-              <View style={styles.iconContainer}>
-                {typeof source.icon === 'string' && (
-                  <Text style={[styles.iconText, { backgroundColor: source.color }]}>{source.icon}</Text>
-                )}
-              </View>
-              <View>
-                {typeof source.name === 'string' && <Text style={styles.sourceText}>{source.name}</Text>}
-              </View>
-            </View>
-          ))}
-        </View>
-      )}
-    </View>*/
-
-    //
 
     <View>
       {sourceList?.length > 0 && (
@@ -139,19 +118,3 @@ const styles = StyleSheet.create({
 
 export default SourceList;
 
-/* 
-<View>
-  {sourceList.map((source,index) => (
-    <View key={index}>
-      <View>
-        <Text style={[styles.iconText, {backgroundColor:source?.color}]}>
-        {source.icon}
-        </Text>
-      </View>
-      <View>
-        <Text>{source.name}</Text>
-        </View>
-    </View>
-  ))}
-</View>
-*/

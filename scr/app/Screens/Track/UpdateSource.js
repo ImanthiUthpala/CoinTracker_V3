@@ -1,18 +1,13 @@
-import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native'
-import React, { useState, useContext, useEffect } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { useState,useEffect } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
-
 import Colors from '../../../../assets/Colors'
 import ColorPicker from '../../components/ColorPicker'
-
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-//import { updateSource } from '../../../../BackEnd/db/Tables/sources'
-import { updateSource, getSourceById } from '../../../../BackEnd/db/Tables/sources'
-import { DatabaseContext } from '../../../../BackEnd/db/DatabaseContext'
+import { updateSource, getSourceById } from '../../../../BackEnd/db/Tables/sources';
 import { useNavigation, useRoute } from '@react-navigation/native'
 
 
-//const source = getSources;
 export const UpdateSource = () => {
 
   const navigation = useNavigation();
@@ -31,26 +26,7 @@ export const UpdateSource = () => {
     }
   }, [source]);
 
- /* const [selectedIcon, setSelectedIcon] = useState(source?.icon || '');
-  const [selectedColor, setSelectedColor] = useState(source?.color || Colors.PURPLE);
-  const [sourceName, setSourceName] = useState(source?.nsme || ''); */
-
-  //to save data
-
-  //const db = useContext(DatabaseContext);
-
-  /*useEffect(() =>{
-    const fetchSource = async ()=>{
-      try{
-        const sourceData = await getSourceById(id);
-        setSource(sourceData);
-      }catch (error){
-        console.error('Error fetching source data:', error);
-      }
-    };
-
-    fetchSource();
-  }, [id]); */
+ 
 
   const handleEdit = async () => {
     if (!sourceName) {
@@ -66,28 +42,6 @@ export const UpdateSource = () => {
     }
   };
 
-  /*const onaUpdateSource = async()=>{
-
-    
-    if (!sourceName) {
-      console.error('Please enter a source name.');
-      return; // Prevent unnecessary database call if source name is empty
-    }
-
-    try {
-      // Call the insertSource function with the collected data
-      updateSource(source.id, sourceName, selectedIcon, selectedColor);
-        console.log('Source updated successfully!');
-      // Optionally, clear the form after successful edit
-      setSourceName('');
-      setSelectedIcon('IC');
-      setSelectedColor(Colors.PURPLE);
-      
-      
-    } catch (error) {
-      console.error('Error editing source:', error);
-    }
-  }; */
 
   return (
     <View style={{

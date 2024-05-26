@@ -1,17 +1,25 @@
-// IncomeScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Modal, StyleSheet, TouchableOpacity, FlatList, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Source } from './Source';
-
-import { getIncome, deleteIncome, getTotalIncome } from '../../../../BackEnd/db/Tables/income'; // Import function to fetch incomes
-import { Link, useIsFocused } from '@react-navigation/native';
+import { getIncome, deleteIncome } from '../../../../BackEnd/db/Tables/income';
+import { useIsFocused } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import IncomeList from '../../components/IncomeList'
 
 
 const categorizeIncome = (income) => {
   const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  //Calculate start of this week
+  const startOfThisWeek = new Date(startOfToday);
+  const dayOfWeek = startOfToday.getDay();
+  const startOfLastWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+
+
+  //Calculate start of this month
+  const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
   const categories = {
     recent: [],
     lastWeek: [],
@@ -21,29 +29,34 @@ const categorizeIncome = (income) => {
 
   income.forEach(item => {
     const incomeDate = new Date(item.date);
-    const diffInDays = Math.floor((now - incomeDate) / (1000 * 60 * 60 * 24));
-
-    if (diffInDays <= 1) {
+  
+    if (incomeDate >= startOfToday) {
       categories.recent.push(item);
-    } else if (diffInDays <= 7) {
+    } else if (incomeDate >= startOfLastWeek) {
       categories.lastWeek.push(item);
-    } else if (diffInDays <= 30) {
+    } else if (incomeDate >= startOfThisMonth) {
       categories.lastMonth.push(item);
     } else {
       categories.older.push(item);
     }
   });
+
   return categories;
 };
 
+const getMonthName = (monthIndex) => {
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  return monthNames[monthIndex];
+}
 export const Income = () => {
 
   const [income, setIncome] = useState([]);
   const [totalIncome, setTotalIncome] = useState(0);
   const [monthlyIncome, setMonthlyIncome] = useState(0);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  //const [incomeList, setIncomeList] = useState([]);
 
   const fetchIncome = async () => {
     try {
@@ -51,7 +64,7 @@ export const Income = () => {
       if (Array.isArray(data)) {
         setIncome(data);
         calculateTotalIncome(data);
-        calculateMonthlyIncome(data);
+        calculateMonthlyIncome(data, selectedMonth, selectedYear);
       } else {
         console.error('Data received from getIncome is not an array:', data);
       }
@@ -66,15 +79,12 @@ export const Income = () => {
     setTotalIncome(total);
   };
 
-  const calculateMonthlyIncome = (data) => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
+  const calculateMonthlyIncome = (data, month, year) => {
+   
     const total = data
       .filter(income => {
         const incomeDate = new Date(income.date);
-        return incomeDate.getMonth() === currentMonth && incomeDate.getFullYear() === currentYear;
+        return incomeDate.getMonth() === month && incomeDate.getFullYear() === year;
       })
       .reduce((sum, income) => sum + income.amount, 0);
 
@@ -111,35 +121,74 @@ export const Income = () => {
     }
   }, [isFocused]);
 
+  useEffect(() => {
+    if (income.length > 0) {
+      calculateMonthlyIncome(income, selectedMonth, selectedYear);
+    }
+  }, [selectedMonth, selectedYear]);
+
+  const changeMonth = (direction) => {
+    let newMonth = selectedMonth + direction;
+    let newYear = selectedYear;
+
+    if (newMonth < 0) {
+      newMonth = 11;
+      newYear -= 1;
+    } else if (newMonth > 11) {
+      newMonth = 0;
+      newYear += 1;
+    }
+
+    setSelectedMonth(newMonth);
+    setSelectedYear(newYear);
+  }
+
   const categorizedIncome = categorizeIncome(income);
+
+  const renderMonthSlider = () => {
+    return(
+      <View style={styles.monthSlider}>
+      <TouchableOpacity onPress={() => changeMonth(-1)}>
+        <Ionicons name="chevron-back" size={24} color="black" />
+      </TouchableOpacity>
+      <Text style={styles.monthText}>
+        {getMonthName(selectedMonth)} {selectedYear}
+      </Text>
+      <TouchableOpacity onPress={() => changeMonth(1)}>
+      <Ionicons name="chevron-forward" size={24} color="black" />
+
+      </TouchableOpacity>
+    </View>
+    )
+   
+  };
 
   return (
     <View style={styles.container}>
-      <View style={{
-        padding: 30,
-        justifyContent: 'space-between',
-        flexDirection: 'row',
-        gap: 20,
-      }}>
+      <View style={styles.summeryContainer}>
 
-        <View>
-          <Text style={styles.titleText}>
-            Total Income
-          </Text>
+        {renderMonthSlider()}
 
-          <Text style={styles.amountText}>
-            Rs. {totalIncome.toFixed(2)}
-          </Text>
-        </View>
+        <View style={styles.incomeContainer}>
+          <View>
+            <Text style={styles.titleText}>
+              Total Income
+            </Text>
 
-        <View>
-          <Text style={styles.titleText}>
-            Monthly Income
-          </Text>
+            <Text style={styles.amountText}>
+              Rs. {totalIncome.toFixed(2)}
+            </Text>
+          </View>
 
-          <Text style={styles.amountText}>
-            Rs. {monthlyIncome.toFixed(2)}
-          </Text>
+          <View>
+            <Text style={styles.titleText}>
+              Monthly Income
+            </Text>
+
+            <Text style={styles.amountText}>
+              Rs. {monthlyIncome.toFixed(2)}
+            </Text>
+          </View>
         </View>
 
       </View>
@@ -152,12 +201,13 @@ export const Income = () => {
           <Text style={styles.sectionHeader}>Last Week</Text>
           <IncomeList incomeList={categorizedIncome.lastWeek} handleDelete={handleDelete} />
 
-          <Text style={styles.sectionHeader}>Last Month</Text>
+          <Text style={styles.sectionHeader}>This Month</Text>
           <IncomeList incomeList={categorizedIncome.lastMonth} handleDelete={handleDelete} />
 
-          <Text style={styles.sectionHeader}>Older</Text>
+          <Text style={styles.sectionHeader}>Previous Months</Text>
           <IncomeList incomeList={categorizedIncome.older} handleDelete={handleDelete} />
 
+          <View style={{ height: 80 }} />
         </ScrollView>
         <TouchableOpacity
           onPress={handlePress}
@@ -171,14 +221,20 @@ export const Income = () => {
   );
 };
 
-//export default Income;
-
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#82E80B',
+  },
+  summeryContainer: {
+    padding: 20,
+    backgroundColor: '#82E80B',
+  },
+  incomeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
   titleText: {
     color: '#fff',
@@ -201,9 +257,10 @@ const styles = StyleSheet.create({
   },
   ScrollViewContent: {
     padding: 10,
+    paddingBottom: 100,
   },
   bottomContainer: {
-    height: 1000,
+    //height: 1000,
     width: '100%',
     backgroundColor: '#fff',
     marginTop: 50,
@@ -212,24 +269,22 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     position: 'absolute',
-    top: 350,
+    top: 330,
     right: 5,
     //marginRight:10,
+  },
+  monthSlider: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  monthText: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: 'bold',
+    marginHorizontal: 10,
+  },
 
-  }
-  /* header: {
-     flexDirection: 'row',
-     justifyContent: 'space-between',
-     paddingVertical: 30,
-   },
- 
-   floatingButton: {
-     position: 'absolute',
-     width: 100,
-     height: 100,
-     left: 295,
-     top: 530,
-   }*/
 });
 
 export default Income;
