@@ -24,43 +24,88 @@ async function openDatabase() {
 }
 
 export const createTables = async () =>{
-  return new Promise ((resolve, reject) =>{
-    db.transaction(tx =>{
-      tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS sources (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL UNIQUE,
-          icon TEXT,
-          color TEXT
-        );`,
-        [],
-        () => {
-          tx.executeSql(
-            `CREATE TABLE IF NOT EXISTS income (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              amount REAL NOT NULL,
-              date TEXT NOT NULL,
-              source_id INTEGER NOT NULL,
-              FOREIGN KEY (source_id) REFERENCES sources(id)
-            );`,
-            [],
-        
-        () =>{
-          resolve();
-        },
-        (_, error) => {
-          reject(error);
-        }
-      );
-    },
-    (_, error) => {
-      reject(error);
-        }
-      );
-    });
-  });
 
-};
+  try {
+    await openDatabase(); // Ensure the database is open
+
+    await new Promise((resolve, reject) => {
+      db.transaction(tx =>{
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS sources (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            icon TEXT,
+            color TEXT
+          );`,
+          [],
+          () => {
+            console.log('Sources table create successfully');
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS income (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount REAL NOT NULL,
+            date TEXT NOT NULL,
+            source_id INTEGER NOT NULL,
+            FOREIGN KEY (source_id) REFERENCES sources(id)
+          );`,
+          [],
+          () =>{
+          console.log('Income table created successfully');
+          },
+          (_, error) => {
+          reject(error);
+          }
+        );
+
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS categories(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            icon TEXT,
+            color TEXT
+          );`,
+          [],
+          () => {
+            console.log('Categories table created successfully');
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS expense (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount REAL NOT NULL,
+            date TEXT NOT NULL,
+            category_id INTEGER NOT NULL,
+            FOREIGN KEY (category_id) REFERENCES categories(id)
+          );`,
+          [],
+          () => {
+            console.log('Expense table created successfully');
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+        //next tx.executeSql....
+
+    }, reject, resolve);
+  });
+    } // end of try
+    catch (error) {
+      console.error ('Error creating tables: ', error);
+    }
+  }; // end of createTables
+
+
 
 function closeDatabase() {
   if (db) {
