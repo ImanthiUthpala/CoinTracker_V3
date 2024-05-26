@@ -1,8 +1,6 @@
 import { db } from '../database'
 
-
 const insertSource = (name, icon, color, callback = () => {}) => {
-
   try {
     db.transaction(tx => {
       tx.executeSql(

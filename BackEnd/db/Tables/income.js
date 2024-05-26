@@ -81,7 +81,6 @@ const getIncomeById = (id) => {
       );
     });
   });
- 
 };
 
 const updateIncome = (id, amount, date, sourceId, callback = () => {}) => {
@@ -92,10 +91,10 @@ const updateIncome = (id, amount, date, sourceId, callback = () => {}) => {
         [amount, date, sourceId, id], // bind parameters as an array
         (_, result) => {
           if(result.rowsAffected > 0){
-            console.log('Source updated successfully');
+            console.log('Income updated successfully');
             callback(result);
           }else{
-            console.error("Error updating source");
+            console.error("Error updating Income");
           }
          
         },
@@ -104,7 +103,6 @@ const updateIncome = (id, amount, date, sourceId, callback = () => {}) => {
   } catch(error){
     console.error('Erroro in updating', error);
   }
-
 }
 
 const deleteIncome = (id) => {
