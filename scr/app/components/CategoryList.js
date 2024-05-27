@@ -8,16 +8,16 @@ import { useNavigation } from '@react-navigation/native';
 
 
 
-const SourceList = ({ sourceList, handleDelete }) => {
+const CategoryList = ({ categoryList, handleDelete }) => {
 
   const navigation = useNavigation();
 
-  const handleEdit = (id, source) => {
-   navigation.navigate('UpdateSource', {source});
+  const handleEdit = (id, category) => {
+   navigation.navigate('UpdateCategory', {category});
   }
 
-  const hadleIncome = (sourceId) => {
-    navigation.navigate('AddIncome', {sourceId});
+  const hadleExpense = (categoryId) => {
+    navigation.navigate('AddExpense', {categoryId});
   }
 
   
@@ -25,32 +25,32 @@ const SourceList = ({ sourceList, handleDelete }) => {
   return (
 
     <View>
-      {sourceList?.length > 0 && (
+      {categoryList?.length > 0 && (
         <View>
-          {sourceList.map((source, index) => (
+          {categoryList.map((category, index) => (
 
             <TouchableOpacity 
             key={index} 
             style={styles.container}
-            onPress={() => hadleIncome(source.id)}>
+            onPress={() => hadleExpense(category.id)}>
 
               <View style={styles.iconContainer}>
-                {source.icon && (
-                  <Text style={[styles.iconText, { backgroundColor: source?.color }]}>
-                    {source.icon}
+                {category.icon && (
+                  <Text style={[styles.iconText, { backgroundColor: category?.color }]}>
+                    {category.icon}
                   </Text>
                 )}
 
               </View>
               <View>
-                <Text style={styles.sourceText}>{source.name}</Text>
+                <Text style={styles.categoryText}>{category.name}</Text>
               </View>
 
               <View style={styles.cardEdit}>
 
                 <View >
                   <TouchableOpacity 
-                    onPress={() => handleEdit(source.id, source)}
+                    onPress={() => handleEdit(category.id, category)}
                   >
                     <FontAwesome6 name="edit" size={24} color="black" />
 
@@ -58,7 +58,7 @@ const SourceList = ({ sourceList, handleDelete }) => {
                 </View>
                 <View>
               <TouchableOpacity
-                onPress={() => handleDelete(source.id)}
+                onPress={() => handleDelete(category.id)}
               >
                 <MaterialIcons
                   name="delete-outline"
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
     display: 'flex',
     flexDirection: 'row',
-   // gap: 20,
+    gap: 8,
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '97%',
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width:60,
   },
-  sourceText: {
+  categoryText: {
     fontSize: 18,
   },
   cardEdit: {
@@ -116,5 +116,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SourceList;
+export default CategoryList;
 

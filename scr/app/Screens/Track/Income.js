@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getIncome, deleteIncome } from '../../../../BackEnd/db/Tables/income';
 import { useIsFocused } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
-import IncomeList from '../../components/IncomeList'
+import IncomeList from '../../components/IncomeList';
 
 
 const categorizeIncome = (income) => {

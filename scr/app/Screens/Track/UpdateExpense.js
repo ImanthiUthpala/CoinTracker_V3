@@ -1,10 +1,103 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Colors from '../../../../assets/Colors';
+import { updateExpense, getExpenseById } from '../../../../BackEnd/db/Tables/expense';
 
-export const UpdateExpense = () => {
+export const UpdateExpense = ({ route, navigation }) => {
+  const { expenseId } = route.params;
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [categoryId, setCategoryId] = useState(null);
+
+  useEffect(() => {
+    const fetchExpense = async () => {
+      try {
+        const expense = await getExpenseById(expenseId);
+        if (expense) {
+          setAmount(expense.amount.toString());
+          setDate(new Date(expense.date));
+          setCategoryId(expense.category_id);
+        }
+      } catch (error) {
+        console.error('Error fetching expense:', error);
+      }
+    };
+    fetchExpense();
+  }, [expenseId]);
+
+  const handleUpdateExpense = async () => {
+    try {
+      updateExpense(expenseId, amount, date.toISOString(), categoryId);
+      console.log('Expense updated successfully!');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error updating expense:', error);
+    }
+  };
+
   return (
-    <View>
-      <Text>UpdateExpense</Text>
+    <View style={styles.container}>
+      <Text style={styles.label}>Amount (Rs.)</Text>
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={amount}
+        onChangeText={(value) => setAmount(value)}
+      />
+      <Text style={styles.label}>Date</Text>
+      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+        <Text style={styles.input}>{date.toDateString()}</Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) {
+              setDate(selectedDate);
+            }
+          }}
+        />
+      )}
+      <TouchableOpacity style={styles.button} onPress={handleUpdateExpense}>
+        <Text style={styles.buttonText}>Update Expense</Text>
+      </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: Colors.WHITE,
+  },
+  label: {
+    fontSize: 18,
+    marginVertical: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: Colors.GRAY,
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 18,
+  },
+  button: {
+    backgroundColor: Colors.GREEN,
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: Colors.WHITE,
+    fontSize: 18,
+  },
+});
+
+
