@@ -11,6 +11,11 @@ export const BudgetCategory = ({route}) => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [categoryList, setCategoryList] = useState([]);
+  
+
+  const handleAddBudget = (categoryId, categoryIcon) => {
+    navigation.navigate('AddBudget');
+  };
 
 
   const fetchCategoryList = async () => {
@@ -70,6 +75,8 @@ export const BudgetCategory = ({route}) => {
     navigation.navigate('UpdateCategory', { category }); //Navigate to UpdateCategory for edition
   };
 
+  
+
   return(
     <View style={StyleSheet.container}>
       <ScrollView contentContainerStyle={StyleSheet.ScrollViewContent}>
@@ -77,7 +84,7 @@ export const BudgetCategory = ({route}) => {
           categoryList={categoryList}
           handleDelete={handleDelete}
           handleEdit={handleEdit}
-          navigationTarget="AddBudget"
+          handleNavigation={handleAddBudget}
           />
       </ScrollView>
       <TouchableOpacity

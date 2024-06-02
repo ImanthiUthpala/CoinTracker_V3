@@ -24,7 +24,9 @@ const getBudget = () => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT * FROM budget;`,
+        `SELECT budget.*, categories.name as categoryName, categories.icon as categoryIcon, categories.color as categoryColor FROM budget
+        JOIN categories ON budget.category_id = categories.id
+        ORDER BY start_date DESC;`,
         [],
         (tx, results) => {
           console.log('SQL Query Results: ', results);

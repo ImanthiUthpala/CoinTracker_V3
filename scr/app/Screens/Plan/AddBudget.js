@@ -7,7 +7,7 @@ import { getCategoryById } from '../../../../BackEnd/db/Tables/categories';
 
 
 export const AddBudget = ({ route, navigation }) => {
-  const { categoryId } = route.params;
+  const { categoryId, categoryIcon } = route.params;
   const [amount, setAmount] = useState('');
   const [dateType, setDateType] = useState('week'); // week or month
   const [startDate, setStartDate] = useState(new Date());

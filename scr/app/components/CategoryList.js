@@ -16,11 +16,12 @@ const CategoryList = ({ categoryList, handleDelete, navigationTarget }) => {
    navigation.navigate('UpdateCategory', {category});
   }
 
-  const handleCategoryPress = (categoryId) => {
+  
+  const handleCategoryPress = (categoryId, categoryIcon) => {
     if (navigationTarget === 'AddExpense') {
       navigation.navigate('AddExpense', {categoryId});
     } else {
-      navigation.navigate('AddBudget', {categoryId});
+      navigation.navigate('AddBudget', {categoryId, categoryIcon});
     }
   };
   /*const hadleExpense = (categoryId) => {
@@ -39,7 +40,7 @@ const CategoryList = ({ categoryList, handleDelete, navigationTarget }) => {
             <TouchableOpacity 
             key={index} 
             style={styles.container}
-            onPress={() => handleCategoryPress(category.id)}>
+            onPress={() => handleCategoryPress(category.id, category.icon)}>
 
               <View style={styles.iconContainer}>
                 {category.icon && (
