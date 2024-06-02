@@ -27,8 +27,8 @@ export const Budget = () => {
     try {
       const data = await getBudget();
       console.log('Fetched Budget data: ', data)
-      if (data.rows && data.rows._array) {
-        setBudget(data.rows._array);
+      if (Array.isArray(data)) {
+        setBudget(data);
         calculateTotalBudget(data);
         calculateMonthlyBudget(data, selectedMonth, selectedYear);
       } else {

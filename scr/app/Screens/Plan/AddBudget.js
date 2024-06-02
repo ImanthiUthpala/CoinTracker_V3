@@ -5,6 +5,7 @@ import Colors from '../../../../assets/Colors';
 import { insertBudget, updateBudget } from '../../../../BackEnd/db/Tables/budget';
 import { getCategoryById } from '../../../../BackEnd/db/Tables/categories';
 
+
 export const AddBudget = ({ route, navigation }) => {
   const { categoryId } = route.params;
   const [amount, setAmount] = useState('');

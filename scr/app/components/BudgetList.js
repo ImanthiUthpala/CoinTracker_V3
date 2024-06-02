@@ -10,7 +10,7 @@ import { getBudget } from '../../../BackEnd/db/Tables/budget';
 
 //console.log('BudgetList component loaded');
 
-const BudgetList = ({ budgetList, expenses = [], handleDelete}) => {
+const BudgetList = ({ budgetList, expenses, handleDelete}) => {
 
 
   const navigation = useNavigation();
@@ -19,9 +19,8 @@ const BudgetList = ({ budgetList, expenses = [], handleDelete}) => {
   useEffect(() => {
     async function fetchBudgetData() {
       try {
-        const response = await fetch(getBudget);
-        const data = await response.json();
-        setBudgetData(data.rows._array);
+        const data = await getBudget();
+        setBudgetData(data);
       } catch (error) {
         console.error('Error fetching budgets:' , error);
       }
@@ -41,25 +40,25 @@ const BudgetList = ({ budgetList, expenses = [], handleDelete}) => {
     }
   };
 
-  const calculateSpentAmount = (budget) => {
-    return expenses
-    .filter(
-      (expense) =>
-        expense.categoryId === budget.categoryId &&
-      new Date(expense.date) >= new Date(budget.start_date) &&
-      new Date(expense.date) <= new Date(budget.end_date)
-    )
-    .reduce((total, expense) => total + parseFloat(expense.amount), 0);
-  };
+  // const calculateSpentAmount = (budget) => {
+  //   return expenses
+  //   .filter(
+  //     (expense) =>
+  //       expense.categoryId === budget.categoryId &&
+  //     new Date(expense.date) >= new Date(budget.start_date) &&
+  //     new Date(expense.date) <= new Date(budget.end_date)
+  //   )
+  //   .reduce((total, expense) => total + parseFloat(expense.amount), 0);
+  // };
 
   return(
     <View>
       {budgetList?.length > 0 && (
         <View>
           {budgetList.map((budget, index) => {
-            const spentAmount = calculateSpentAmount(budget);
-            const remainingAmount = budget.cash_limit - spentAmount;
-            const progress = spentAmount / budget.cash_limit;
+           // const spentAmount = calculateSpentAmount(budget);
+           // const remainingAmount = budget.cash_limit - spentAmount;
+           // const progress = spentAmount / budget.cash_limit;
 
             return (
               <TouchableOpacity
@@ -78,12 +77,12 @@ const BudgetList = ({ budgetList, expenses = [], handleDelete}) => {
                   <Text style={styles.dateText}>
                     Period: {new Date(budget.start_date).toDateString()} - {new Date(budget.end_date).toDateString()}
                   </Text>
-                  <View style={styles.progressBarContainer}>
+                   {/* <View style={styles.progressBarContainer}>
                     <ProgressBar progress={progress} color={progress >=1 ? Colors.RED : Colors.GREEN} style={styles.progressBar} />
                     <Text style={[styles.remainingAmountText, progress >= 1 && styles.exceededText]}>
                       {remainingAmount >=0 ? `Remaining: ${remainingAmount}` : `Exceeded: ${-remainingAmount}`}
                     </Text>
-                  </View>
+                  </View>  */}
                 </View> 
                 <View style={styles.cardEdit}>
                   <TouchableOpacity onPress={() => handleEdit(budget)}>

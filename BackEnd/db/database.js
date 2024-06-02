@@ -30,6 +30,7 @@ export const createTables = async () =>{
 
     await new Promise((resolve, reject) => {
       db.transaction(tx =>{
+        
         tx.executeSql(
           `CREATE TABLE IF NOT EXISTS sources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -2,16 +2,6 @@ import { db } from '../database'
 
 const insertBudget = (startDate, endDate, cashLimit, categoryId) => {
   return new Promise((resolve, reject) => {
-
-    // Validate and format data
-    // const formattedStartDate = new Date(startDate).toISOString();
-    // const formattedEndDate = new Date(endDate).toISOString();
-    // const formattedCashLimit = parseFloat(cashLimit);
-
-    // if (isNaN(formattedCashLimit)) {
-    //   reject(new Error('Invalid cash limit'));
-    //   return;
-    // }
     
     db.transaction(tx => {
       tx.executeSql(
@@ -39,12 +29,26 @@ const getBudget = () => {
         (tx, results) => {
           console.log('SQL Query Results: ', results);
           if (results.rows && results.rows._array) {
-            const rows = results.rows._array;
-            console.log('Budget rows: ', rows);
+            const rows = results.rows._array; //Extract hte array directly
+
+            
             const validRows = rows.filter(item => 
               !isNaN(parseFloat(item.cash_limit)));
               console.log('Valid Budget data: ', validRows);
-            resolve(validRows);
+
+              // Parse dates and cash limits
+
+              const parsedRows = validRows.map(row => ({
+                ...row,
+                start_date: new Date(row.start_date),
+                end_date: new Date(row.end_date),
+                cash_limit: parseFloat(row.cash_limit)
+              }));
+
+              console.log('Budget rows: ', parsedRows);
+
+              
+            resolve(parsedRows);
           } else {
             console.error('No rows found in the budget query results');
             resolve([]);
