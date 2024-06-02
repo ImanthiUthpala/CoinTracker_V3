@@ -119,4 +119,21 @@ const deleteExpense = (id) => {
   });
 };
 
-export {insertExpense, getExpense, getExpenseById, updateExpense, deleteExpense, getTotalExpense};
+const getExpenseByCategoryAndDateRange = (categoryId, startDate, endDate) => {
+  return new Promise ((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT SUM(amount) as totalAmount FROM expense WHERE category_id = ? AND date BETWEEN ? AND ?; `,
+        [categoryId, startDate, endDate],
+        (_, {rows }) => {
+          resolve(rows.item(0));
+        },
+        (_, error) => {
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export {insertExpense, getExpense, getExpenseById, updateExpense, deleteExpense, getTotalExpense, getExpenseByCategoryAndDateRange};

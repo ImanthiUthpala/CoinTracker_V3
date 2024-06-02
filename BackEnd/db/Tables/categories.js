@@ -33,20 +33,31 @@ const getCategory = (callback = () => {}) => {
 }
 
 const getCategoryById = (id, callback = () => {}) => {
-  try{
-    db.transaction(tx => {
-      tx.executeSql(
-        `SELECT * FROM categories WHERE id = ?;`,
-        [id],
-        (_, {rows: {_array} }) => {
-          callback(_array[0]);
-        },
-      );
-    });
-  } catch (error){
-    console.error('Error fetching category by id: ', error);
-  }
-}
+  return new Promise ((resolve, reject) => {
+    try{
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT * FROM categories WHERE id = ?;`,
+          [id],
+          (_, {rows: {_array} }) => {
+            if(_array.length > 0) {
+              resolve(_array[0]);
+            } else {
+              resolve(null); // no category found with the given id
+            }
+            callback(_array[0]);
+          },
+          (tx, error) =>{
+            reject(error);
+          }
+        );
+      });
+    } catch (error){
+      console.error('Error fetching category by id: ', error);
+      reject(error);
+    }
+  });  
+};
 
 const deleteCategory = (id, callback = () => {}) => {
   try{

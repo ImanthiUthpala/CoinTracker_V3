@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 
 
 
-const CategoryList = ({ categoryList, handleDelete }) => {
+const CategoryList = ({ categoryList, handleDelete, navigationTarget }) => {
 
   const navigation = useNavigation();
 
@@ -16,10 +16,17 @@ const CategoryList = ({ categoryList, handleDelete }) => {
    navigation.navigate('UpdateCategory', {category});
   }
 
-  const hadleExpense = (categoryId) => {
-    navigation.navigate('AddExpense', {categoryId});
+  const handleCategoryPress = (categoryId) => {
+    if (navigationTarget === 'AddExpense') {
+      navigation.navigate('AddExpense', {categoryId});
+    } else {
+      navigation.navigate('AddBudget', {categoryId});
+    }
+  };
+  /*const hadleExpense = (categoryId) => {
+    navigation.navigate('AddExpense', {categoryId}); <---Here 
   }
-
+*/
   
 
   return (
@@ -32,7 +39,7 @@ const CategoryList = ({ categoryList, handleDelete }) => {
             <TouchableOpacity 
             key={index} 
             style={styles.container}
-            onPress={() => hadleExpense(category.id)}>
+            onPress={() => handleCategoryPress(category.id)}>
 
               <View style={styles.iconContainer}>
                 {category.icon && (

@@ -78,7 +78,10 @@ export const Category = () => {
     <>
     <View style={styles.container}>
     <ScrollView contentContainerStyle={styles.ScrollViewContent}>
-      <CategoryList categoryList={categoryList} handleDelete={handleDelete}/>
+      <CategoryList 
+      categoryList={categoryList} 
+      handleDelete={handleDelete}
+      navigationTarget="AddExpense"/>
 
       </ScrollView>
 

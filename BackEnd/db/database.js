@@ -95,6 +95,24 @@ export const createTables = async () =>{
             reject(error);
           }
         );
+
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS budget (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            start_date TEXT NOT NULL,
+            end_date TEXT NOT NULL,
+            cash_limit REAL NOT NULL,
+            category_id INTEGER NOT NULL,
+            FOREIGN KEY (category_id) REFERENCES categories(id)
+          );`,
+          [],
+          () => {
+            console.log('Budget table created successfully');
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
         //next tx.executeSql....
 
     }, reject, resolve);
