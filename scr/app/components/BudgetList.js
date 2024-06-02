@@ -10,7 +10,7 @@ import { ProgressBar } from 'react-native-paper';
 
 //console.log('BudgetList component loaded');
 
-const BudgetList = ({ budgetList, expenses, handleDelete}) => {
+const BudgetList = ({ budgetList = [], expenses, handleDelete}) => {
 
 
   const navigation = useNavigation();
@@ -28,6 +28,29 @@ const BudgetList = ({ budgetList, expenses, handleDelete}) => {
     fetchBudgetData();
   }, []);
 
+  // useEffect(() => {
+  //   //Recalculate spent amount when budgetaList or expense change
+
+  //   if (budgetList.length > 0 && expenses.length > 0) {
+  //     const updatedBudgetList = budgetList.map(budget => {
+  //       const spentAmount = calculateSpentAmount(budget, expenses);
+  //       return { ...budget, spentAmount};
+  //     });
+  //     setBudgetData(updatedBudgetList);
+  //   }
+  // }, [budgetList, expenses]);
+
+  const calculateSpentAmount = (budget) => {
+    return expenses
+      .filter(
+        (expense) =>
+          expense.category_id === budget.category_id &&
+          new Date(expense.date) >= new Date(budget.start_date) &&
+          new Date(expense.date) <= new Date(budget.end_date)
+      )
+      .reduce((total, expense) => total + parseFloat(expense.amount), 0);
+  };
+
   if (!budgetList || budgetList.length === 0) {
     return <Text> No budget data available oooooo</Text>
   }
@@ -40,23 +63,13 @@ const BudgetList = ({ budgetList, expenses, handleDelete}) => {
     }
   };
 
-  // const calculateSpentAmount = (budget) => {
-  //   return expenses
-  //   .filter(
-  //     (expense) =>
-  //       expense.categoryId === budget.categoryId &&
-  //     new Date(expense.date) >= new Date(budget.start_date) &&
-  //     new Date(expense.date) <= new Date(budget.end_date)
-  //   )
-  //   .reduce((total, expense) => total + parseFloat(expense.amount), 0);
-  // };
-
   return(
     <View>
       {budgetList?.length > 0 && (
         <View>
           {budgetList.map((budget, index) => {
            
+           const spentAmount = calculateSpentAmount(budget);
            const remainingAmount = budget.cash_limit - budget.spentAmount;
            const isExceeded = remainingAmount < 0;
            const progress = budget.spentAmount / budget.cash_limit;
@@ -76,7 +89,7 @@ const BudgetList = ({ budgetList, expenses, handleDelete}) => {
                   <Text style={styles.categoryText}>{budget.categoryName}</Text>
                   <Text style={styles.amountText}>Budget: Rs.{budget.cash_limit.toFixed(2)}</Text>
                   <Text style={styles.spentAmount}>Spent: Rs.
-                  {budget.spentAmount.toFixed(2)}</Text>
+                  {spentAmount.toFixed(2)}</Text>
                   <Text style={[styles.remainingAmount, isExceeded && styles.exceededAmount]}>
                     {isExceeded ? 'Exceeded by: ' : 'Remaining: '}Rs. {Math.abs(remainingAmount).toFixed(2)}
                   </Text>

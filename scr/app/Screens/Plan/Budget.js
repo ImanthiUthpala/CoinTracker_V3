@@ -6,6 +6,7 @@ import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import BudgetList from '../../components/BudgetList';
 import { ProgressBar } from 'react-native-paper';
+import { getExpense } from '../../../../BackEnd/db/Tables/expense';
 
 // Helper function to get month name
 const getMonthName = (monthIndex) => {
@@ -16,6 +17,7 @@ const getMonthName = (monthIndex) => {
 export const Budget = () => {
 
   const [budget, setBudget] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const [totalBudget, setTotalBudget] = useState(0);
   const [monthlyBudget, setMonthlyBudget] = useState(0);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -27,7 +29,10 @@ export const Budget = () => {
   const fetchBudget = async () => {
     try {
       const data = await getBudget();
+      const expenseData = await getExpense();
       console.log('Fetched Budget data: ', data)
+      console.log('Fetched Expense data: ', expenseData);
+
       if (Array.isArray(data)) {
         setBudget(data);
         calculateTotalBudget(data);
@@ -35,6 +40,14 @@ export const Budget = () => {
       } else {
         console.error('Data received from getBudget is not an array: ', data);
         setBudget([]);
+      }
+
+      if (Array.isArray(expenseData)) {
+        setExpenses(expenseData);
+      } else {
+        console.error('Error fetching budgets and expenses: ', error);
+        setBudget([]);
+        setExpenses([]);
       }
     } catch (error){
       console.error('Error fetching budgets: ', error);
@@ -160,7 +173,7 @@ export const Budget = () => {
 
       <ScrollView contentContainerStyle={styles.ScrollViewContent}>
         {budget.length > 0 ? (
-          <BudgetList budgetList={budget} handleDelete={handleDelete} />
+          <BudgetList budgetList={budget} expenses={expenses} handleDelete={handleDelete} />
         ) : (
           <Text style={styles.noBudgetText}>No budgets available on screen</Text>
         )
