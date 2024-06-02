@@ -4,8 +4,8 @@ import Colors from '../../../assets/Colors';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { ProgressBar } from 'react-native-progress';
 import { getBudget } from '../../../BackEnd/db/Tables/budget';
+import { ProgressBar } from 'react-native-paper';
 
 
 //console.log('BudgetList component loaded');
@@ -56,9 +56,10 @@ const BudgetList = ({ budgetList, expenses, handleDelete}) => {
       {budgetList?.length > 0 && (
         <View>
           {budgetList.map((budget, index) => {
-           // const spentAmount = calculateSpentAmount(budget);
-           // const remainingAmount = budget.cash_limit - spentAmount;
-           // const progress = spentAmount / budget.cash_limit;
+           
+           const remainingAmount = budget.cash_limit - budget.spentAmount;
+           const isExceeded = remainingAmount < 0;
+           const progress = budget.spentAmount / budget.cash_limit;
 
             return (
               <TouchableOpacity
@@ -73,16 +74,18 @@ const BudgetList = ({ budgetList, expenses, handleDelete}) => {
                 </View>
                  <View style={styles.detailsContainer}>
                   <Text style={styles.categoryText}>{budget.categoryName}</Text>
-                  <Text style={styles.amountText}>Budget: {budget.cash_limit}</Text>
+                  <Text style={styles.amountText}>Budget: Rs.{budget.cash_limit.toFixed(2)}</Text>
+                  <Text style={styles.spentAmount}>Spent: Rs.
+                  {budget.spentAmount.toFixed(2)}</Text>
+                  <Text style={[styles.remainingAmount, isExceeded && styles.exceededAmount]}>
+                    {isExceeded ? 'Exceeded by: ' : 'Remaining: '}Rs. {Math.abs(remainingAmount).toFixed(2)}
+                  </Text>
                   <Text style={styles.dateText}>
                     Period: {new Date(budget.start_date).toDateString()} - {new Date(budget.end_date).toDateString()}
                   </Text>
-                   {/* <View style={styles.progressBarContainer}>
-                    <ProgressBar progress={progress} color={progress >=1 ? Colors.RED : Colors.GREEN} style={styles.progressBar} />
-                    <Text style={[styles.remainingAmountText, progress >= 1 && styles.exceededText]}>
-                      {remainingAmount >=0 ? `Remaining: ${remainingAmount}` : `Exceeded: ${-remainingAmount}`}
-                    </Text>
-                  </View>  */}
+                    <View style={styles.progressBarContainer}>
+                    <ProgressBar progress={progress} color={isExceeded ? Colors.RED : Colors.GREEN} style={styles.progressBar} />
+                  </View>  
                 </View> 
                 <View style={styles.cardEdit}>
                   <TouchableOpacity onPress={() => handleEdit(budget)}>
@@ -115,7 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
     padding: 10,
     borderRadius: 15,
-    height: 120,
+    height: 170,
   },
   iconContainer: {
     justifyContent: 'center',
@@ -130,6 +133,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flex: 1,
     marginLeft: 10,
+    height:150,
   },
   categoryText: {
     fontSize: 18,
@@ -138,9 +142,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.GRAY,
   },
-  dateText: {
-    fontSize: 14,
-    color: Colors.GRAY,
+  spentAmount: {
+    fontSize: 16,
+    color: 'blue',
+  },
+  remainingAmount: {
+    fontSize: 16,
+    color: 'green',
+  },
+  exceededAmount: {
+    color: 'red',
   },
   progressBarContainer: {
     marginTop: 10,
@@ -148,13 +159,6 @@ const styles = StyleSheet.create({
   progressBar: {
     height: 10,
     borderRadius: 5,
-  },
-  remainingAmountText: {
-    fontSize: 14,
-    marginTop: 5,
-  },
-  exceededText: {
-    color: Colors.RED,
   },
   cardEdit: {
     display: 'flex',

@@ -24,9 +24,14 @@ const getBudget = () => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT budget.*, categories.name as categoryName, categories.icon as categoryIcon, categories.color as categoryColor FROM budget
-        JOIN categories ON budget.category_id = categories.id
-        ORDER BY start_date DESC;`,
+        `SELECT budget.*, categories.name as categoryName, categories.icon as categoryIcon, categories.color as categoryColor,
+        COALESCE(SUM(expense.amount), 0) as spentAmount
+        FROM budget
+        LEFT JOIN categories ON budget.category_id = categories.id
+        LEFT JOIN expense ON expense.category_id = budget.category_id 
+          AND expense.date BETWEEN budget.start_date AND budget.end_date
+        GROUP BY budget.id, categories.name, categories.icon, categories.color
+        ORDER BY budget.start_date DESC;`,
         [],
         (tx, results) => {
           console.log('SQL Query Results: ', results);

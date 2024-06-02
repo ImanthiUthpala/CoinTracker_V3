@@ -5,6 +5,7 @@ import { getBudget, deleteBudget } from '../../../../BackEnd/db/Tables/budget';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import BudgetList from '../../components/BudgetList';
+import { ProgressBar } from 'react-native-paper';
 
 // Helper function to get month name
 const getMonthName = (monthIndex) => {
