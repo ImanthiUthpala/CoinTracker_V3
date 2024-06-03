@@ -20,6 +20,10 @@ export const Budget = () => {
   const [expenses, setExpenses] = useState([]);
   const [totalBudget, setTotalBudget] = useState(0);
   const [monthlyBudget, setMonthlyBudget] = useState(0);
+
+  const [weeklyBudgets, setWeeklyBudgets] = useState([]);
+  const [monthlyBudgets, setMonthlyBudgets] = useState([]);
+
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
@@ -35,8 +39,9 @@ export const Budget = () => {
 
       if (Array.isArray(data)) {
         setBudget(data);
-        calculateTotalBudget(data);
-        calculateMonthlyBudget(data, selectedMonth, selectedYear);
+        categorizeBudgets(data, selectedMonth, selectedYear);
+        // calculateTotalBudget(data);
+        // calculateMonthlyBudget(data, selectedMonth, selectedYear);
       } else {
         console.error('Data received from getBudget is not an array: ', data);
         setBudget([]);
@@ -46,7 +51,7 @@ export const Budget = () => {
         setExpenses(expenseData);
       } else {
         console.error('Error fetching budgets and expenses: ', error);
-        setBudget([]);
+       // setBudget([]);
         setExpenses([]);
       }
     } catch (error){
@@ -55,23 +60,64 @@ export const Budget = () => {
     }
   };
 
-  const calculateTotalBudget = (data) => {
-    const total = data.reduce((sum, budget) => sum + parseFloat(budget.cash_limit), 0);
-    setTotalBudget(total);
-  };
+  const categorizeBudgets = (data, month, year) => {
+    const weekly = [];
+    const monthly = [];
+    let monthlyTotal = 0;
 
-  const calculateMonthlyBudget = (data, month, year) => {
-    const total = data
-    .filter(budget => {
+    data.forEach(budget => {
       const budgetStartDate = new Date(budget.start_date);
       const budgetEndDate = new Date(budget.end_date);
-      return (budgetStartDate.getMonth() === month && budgetStartDate.getFullYear() === year) ||
-      (budgetEndDate.getMonth() === month && budgetEndDate.getFullYear() === year);
-    })
-    .reduce((sum, budget) => sum + parseFloat(budget.cash_limit), 0);
 
-    setMonthlyBudget(total);
-  }
+      const isCurrentMonth = (date) => date.getMonth() === month && date.getFullYear() === year;
+
+      const budgetSpansCurrentMonth = 
+      (budgetStartDate.getFullYear() < year || (budgetStartDate.getFullYear() === year && budgetStartDate.getMonth() <= month)) &&
+      (budgetEndDate.getFullYear() > year || (budgetEndDate.getFullYear() === year && budgetEndDate.getMonth() >= month));
+
+      if (budgetSpansCurrentMonth) {
+        const overlapStartDate = budgetStartDate.getMonth() === month && budgetStartDate.getFullYear() === year
+        ? budgetStartDate
+        : new Date(year, month, 1);
+
+      const overlapEndDate = budgetEndDate.getMonth() === month && budgetEndDate.getFullYear() === year
+      ? budgetEndDate
+      : new Date(year, month + 1, 0);
+
+      const duration = Math.ceil((overlapEndDate - overlapStartDate) / (1000 * 60 * 60 * 24)) + 1;
+      
+      monthlyTotal += (parseFloat(budget.cash_limit) / Math.ceil((budgetEndDate - budgetStartDate) / (1000 * 60 * 60 * 24))) * duration;
+
+      if (duration > 7) {
+        monthly.push(budget);
+      } else {
+        weekly.push(budget);
+      }
+      }
+    });
+
+    setWeeklyBudgets(weekly);
+    setMonthlyBudgets(monthly);
+    setMonthlyBudget(monthlyTotal);
+  };
+
+  // const calculateTotalBudget = (data) => {
+  //   const total = data.reduce((sum, budget) => sum + parseFloat(budget.cash_limit), 0);
+  //   setTotalBudget(total);
+  // };
+
+  // const calculateMonthlyBudget = (data, month, year) => {
+  //   const total = data
+  //   .filter(budget => {
+  //     const budgetStartDate = new Date(budget.start_date);
+  //     const budgetEndDate = new Date(budget.end_date);
+  //     return (budgetStartDate.getMonth() === month && budgetStartDate.getFullYear() === year) ||
+  //     (budgetEndDate.getMonth() === month && budgetEndDate.getFullYear() === year);
+  //   })
+  //   .reduce((sum, budget) => sum + parseFloat(budget.cash_limit), 0);
+
+  //   setMonthlyBudget(total);
+  // }
 
   const handleDelete = (id) => {
     Alert.alert(
@@ -105,7 +151,7 @@ export const Budget = () => {
 
   useEffect(() => {
     if (budget.length > 0) {
-      calculateMonthlyBudget(budget, selectedMonth, selectedYear);
+      categorizeBudgets(budget, selectedMonth, selectedYear);
     }
   }, [selectedMonth, selectedYear]);
 
@@ -141,7 +187,7 @@ export const Budget = () => {
           <Ionicons name="chevron-forward" size={24} color="black" />
         </TouchableOpacity>
       </View>
-    )
+    );
   };
   
   return (
@@ -149,7 +195,7 @@ export const Budget = () => {
       <View style={styles.summeryContainer}>
         {renderMonthSlider()}
 
-        <View style={styles.budgetContainer}>
+        {/* <View style={styles.budgetContainer}>
           <View>
             <Text style={styles.titleText}>
               Total Budgets
@@ -159,29 +205,38 @@ export const Budget = () => {
               Rs. {totalBudget.toFixed(2)}
             </Text>
           </View>
-
+          
           <View>
+          <Text style={styles.titleText}>
+              Monthly Budgets
+            </Text>
             <Text style={styles.amountText}>
               Rs. {monthlyBudget.toFixed(2)}
             </Text>
           </View>
-        </View>
+          
+          
+        </View> */}
 
       </View>
       
       <View style={styles.bottomContainer}>
 
       <ScrollView contentContainerStyle={styles.ScrollViewContent}>
-        {budget.length > 0 ? (
-          <BudgetList budgetList={budget} expenses={expenses} handleDelete={handleDelete} />
+        <Text style={styles.sectionHeader}>Weekly Budgets</Text>
+        {weeklyBudgets.length > 0 ? (
+          <BudgetList budgetList={weeklyBudgets} expenses={expenses} handleDelete={handleDelete} />
         ) : (
-          <Text style={styles.noBudgetText}>No budgets available on screen</Text>
+          <Text style={styles.noBudgetText}>No monthly budgets available</Text>
+        )}
+
+        <Text style={styles.sectionHeader}>Monthly Budgets</Text>
+        {monthlyBudgets.length > 0 ? (
+          <BudgetList budgetList={monthlyBudgets} expenses={expenses} handleDelete={handleDelete} />
+        ) : (
+          <Text style={styles.noBudgetText}>No monthly budgets available</Text>
         )
         }
-          
-
-        
-
 
       <View style={{ height: 280 }} />
       </ScrollView>
@@ -201,11 +256,13 @@ export const Budget = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    //padding: 20,
     backgroundColor: '#82E80B',
   },
   summeryContainer: {
     padding: 20,
     backgroundColor: '#82E80B',
+    //marginBottom: 20,
   },
   expenseContainer: {
     flexDirection: 'row',
@@ -251,12 +308,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 10,
   },
   monthText: {
     fontSize: 18,
     color: '#fff',
     fontWeight: 'bold',
     marginHorizontal: 10,
+  },
+  budgetContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+   // backgroundColor: '#FFF',
+    //padding: 15,
+   // borderRadius: 10,
+    //shadowColor: '#000',
+    //shadowOffset: { width: 0, height: 2 },
+   // shadowOpacity: 0.1,
+    //shadowRadius: 8,
+    //elevation: 4,
   },
 });
 
