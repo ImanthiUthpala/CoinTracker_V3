@@ -114,6 +114,23 @@ export const createTables = async () =>{
             reject(error);
           }
         );
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS goal (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            target_amount REAL NOT NULL,
+            due_date TEXT NOT NULL,
+            icon TEXT,
+            color TEXT
+          );`,
+          [],
+          () => {
+            console.log('Goal table created successfuly');
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
         //next tx.executeSql....
 
     }, reject, resolve);

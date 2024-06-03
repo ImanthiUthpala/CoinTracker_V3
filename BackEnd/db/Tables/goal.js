@@ -1,72 +1,98 @@
-import { openDatabase } from '../database';
+import { db } from '../database';
 
-async function createGoalTable() {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `CREATE TABLE IF NOT EXISTS goal (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        target_amount REAL NOT NULL,
-        due_date TEXT NOT NULL,
-        category_id INTEGER NOT NULL,
-        FOREIGN KEY (category_id) REFERENCES categories(id)
-      );`
-    );
-  });
+const insertGoal = (name, targetAmount, dueDate, icon, color, callback = () => {}) => {
+  try {
+    db.transaction(tx => {
+      tx.executeSql(
+        `INSERT INTO goal (name, target_amount, due_date, icon, color) VALUES (?, ?, ?, ?, ?);`,
+        [name, targetAmount, dueDate, icon, color],
+        (_, result) => {
+          console.log('Goal added successfully');
+          callback(result);
+        },
+      );
+    });
+  } catch (error) {
+    console.errror('Error addig goal', error);
+  }
 }
 
-async function insertGoal(name, targetAmount, dueDate, categoryId) {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `INSERT INTO goal (name, target_amount, due_date, category_id) VALUES (?, ?, ?, ?)`,
-      [name, targetAmount, dueDate, categoryId]
-    );
-  });
-}
+const getGoal = (callback = () => {}) => {
+  try {
+    db.transaction(tx => {
+      tx.executeSql(
+       `SELECT * FROM goal`, [],
+       (_, {rows: {_array} }) => {
+        callback(_array);
+       },
+     );
+   });
+  } catch (error) {
+    console.error('Error in getGoal', error);
+    callback([]);
+  }
+};
 
-async function getGoal() {
-  await openDatabase();
-  const results = await db.transactionAsync(async tx => {
-    return tx.executeSqlAsync(
-      `SELECT * FROM goal`
-    );
+const getGoalById = (id, callback = () => {}) => {
+  return new Promise ((resolve, reject) => {
+    try {
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT * FROM goal WHERE id = ?`,
+          [id],
+          (_, {rows: {_array} }) => {
+            if(_array.length > 0) {
+              resolve(_array[0]);
+            } else {
+              resolve(null); // no goal found with the given id
+            }
+            callback(_array[0]);
+          },
+          (tx, error) => {
+            reject(error);
+          }
+        );
+      });
+    } catch (error){
+      console.error('Error fetching goal by id: ', error);
+      reject(error);
+    }
   });
-  const rows = results.rows._array;
-  return rows;
-}
+};
 
-async function getGoalById(id) {
-  await openDatabase();
-  const results = await db.transactionAsync(async tx => {
-    return tx.executeSqlAsync(
-      `SELECT * FROM goal WHERE id = ?`,
-      [id]
-    );
-  });
-  const row = results.rows.length > 0 ? results.rows._array[0] : null;
-  return row;
-}
+const updateGoal = (id, name, targetAmount, dueDate, icon, color, callback =() => {}) => {
+  try{
+    db.transaction(tx => {
+      tx.executeSql(
+        `UPDATE goal SET name = ?, target_amount = ?, due_date = ?, icon = ?, color = ? WHERE id = ?;`,
+        [name, targetAmount, dueDate, icon, color, id],
+        (_, result) => {
+          if (result.rowsAffected > 0){
+            console.log('Goal updated successfully');
+            callback(result);
+          } else {
+            console.error('Error updating Goal');
+          }
+        },
+      );
+    });
+  } catch (error) {
+    console.error('Error in updating goal', error);
+  }
+};
 
-async function updateGoal(id, name, targetAmount, dueDate, categoryId) {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `UPDATE goal SET name = ?, target_amount = ?, due_date = ?, category_id = ? WHERE id = ?`,
-      [name, targetAmount, dueDate, categoryId, id]
-    );
-  });
-}
+const deleteGoal = (id, callback = () => {}) => {
+  try {
+    db.transaction(tx => {
+      tx.executeSql(
+        `DELETE FROM goal WHERE id = ?`,
+        [id]
+      );
+    });
+  } catch (error){
+    console.error('Error in deleting Goal', error);
+    callback([]);
+  }  
+};
 
-async function deleteGoal(id) {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `DELETE FROM goal WHERE id = ?`,
-      [id]
-    );
-  });
-}
-
-export { createGoalTable, insertGoal, getGoal, getGoalById, updateGoal, deleteGoal };
+export { insertGoal, getGoal, getGoalById, updateGoal, deleteGoal };
