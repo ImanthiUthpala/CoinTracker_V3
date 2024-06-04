@@ -14,6 +14,10 @@ import { AddBudget } from './AddBudget';
 import { UpdateBudget } from './UpdateBudget';
 import { BudgetCategory} from './BudgetCategory';
 
+import AddGoal from './AddGoal';
+import UpdateGoal from './UpdateGoal';
+import ContributeGoal from '../../components/ContributeGoal';
+//import Goal from '../Plan/Goal';
 
 const PlanTab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -95,12 +99,54 @@ function BudgetStack(){
   );
 }
 
+function GoalStack(){
+  return( 
+    <Stack.Navigator>
+      <Stack.Screen
+        name="GoalStack"
+        component={Goal}
+        options={{
+          headerShown:false
+        }}
+        />
+      <Stack.Screen
+        name="AddGoal"
+        component={AddGoal}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+        <Stack.Screen
+        name="UpdateGoal"
+        component={UpdateGoal}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+         <Stack.Screen
+        name="ContributeGoal"
+        component={ContributeGoal}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+       
+    </Stack.Navigator>
+  );
+}
+
 export const Plan = () => {
   return (
       <PlanTab.Navigator>
           <PlanTab.Screen name="Budget" component={BudgetStack} />
           <PlanTab.Screen name="Reminder" component={Bill_Reminder} />
-          <PlanTab.Screen name="Goal" component={Goal} />
+          <PlanTab.Screen name="Goal" component={GoalStack} />
 
       </PlanTab.Navigator>
   );

@@ -30,7 +30,19 @@ export const createTables = async () =>{
 
     await new Promise((resolve, reject) => {
       db.transaction(tx =>{
-        
+
+        // tx.executeSql(
+        //   `DROP TABLE goal;
+        //   );`,
+        //   [],
+        //   () => {
+        //     console.log('goal table drop successfully');
+        //   },
+        //   (_, error) => {
+        //     reject(error);
+        //   }
+        // );
+
         tx.executeSql(
           `CREATE TABLE IF NOT EXISTS sources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -114,6 +126,7 @@ export const createTables = async () =>{
             reject(error);
           }
         );
+        
         tx.executeSql(
           `CREATE TABLE IF NOT EXISTS goal (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -121,7 +134,8 @@ export const createTables = async () =>{
             target_amount REAL NOT NULL,
             due_date TEXT NOT NULL,
             icon TEXT,
-            color TEXT
+            color TEXT,
+            progress REAL DEFAULT 0
           );`,
           [],
           () => {

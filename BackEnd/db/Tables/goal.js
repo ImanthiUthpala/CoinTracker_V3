@@ -1,36 +1,50 @@
 import { db } from '../database';
 
-const insertGoal = (name, targetAmount, dueDate, icon, color, callback = () => {}) => {
-  try {
-    db.transaction(tx => {
-      tx.executeSql(
-        `INSERT INTO goal (name, target_amount, due_date, icon, color) VALUES (?, ?, ?, ?, ?);`,
-        [name, targetAmount, dueDate, icon, color],
-        (_, result) => {
-          console.log('Goal added successfully');
-          callback(result);
-        },
-      );
-    });
-  } catch (error) {
-    console.errror('Error addig goal', error);
-  }
+const insertGoal = (name, targetAmount, dueDate, icon, color) => {
+  return new Promise ((resolve, reject) => {
+    try {
+      db.transaction(tx => {
+        tx.executeSql(
+          `INSERT INTO goal (name, target_amount, due_date, icon, color) VALUES (?, ?, ?, ?, ?);`,
+          [name, targetAmount, dueDate, icon, color],
+          (tx, result) => {
+            resolve(result);
+            console.log('Goal added successfully');
+          },
+          (tx, error) => {
+            reject(error);
+            console.error('Error insering goal: ', error);
+          }
+        );
+      });
+    } catch (error) {
+      console.errror('Error addig goal', error);
+    }
+  }) ;
+  
 }
 
-const getGoal = (callback = () => {}) => {
-  try {
-    db.transaction(tx => {
-      tx.executeSql(
-       `SELECT * FROM goal`, [],
-       (_, {rows: {_array} }) => {
-        callback(_array);
-       },
-     );
-   });
-  } catch (error) {
-    console.error('Error in getGoal', error);
-    callback([]);
-  }
+const getGoal = () => {
+  return new Promise((resolve, rejet) => {
+    try {
+      db.transaction(tx => {
+        tx.executeSql(
+         `SELECT * FROM goal`,
+         [],
+         (_, {rows: {_array} }) => {
+          resolve(_array);
+         },
+         (_, error) => {
+          rejet(error);
+         }
+       );
+     });
+    } catch (error) {
+      console.error('Error in getGoal', error);
+      rejet(error);
+    }
+  });
+ 
 };
 
 const getGoalById = (id, callback = () => {}) => {
@@ -60,12 +74,12 @@ const getGoalById = (id, callback = () => {}) => {
   });
 };
 
-const updateGoal = (id, name, targetAmount, dueDate, icon, color, callback =() => {}) => {
+const updateGoal = (id, name, targetAmount, dueDate, icon, color, progress, callback =() => {}) => {
   try{
     db.transaction(tx => {
       tx.executeSql(
-        `UPDATE goal SET name = ?, target_amount = ?, due_date = ?, icon = ?, color = ? WHERE id = ?;`,
-        [name, targetAmount, dueDate, icon, color, id],
+        `UPDATE goal SET name = ?, target_amount = ?, due_date = ?, icon = ?, color = ?, progress = ? WHERE id = ?;`,
+        [name, targetAmount, dueDate, icon, color, progress, id],
         (_, result) => {
           if (result.rowsAffected > 0){
             console.log('Goal updated successfully');
@@ -95,4 +109,25 @@ const deleteGoal = (id, callback = () => {}) => {
   }  
 };
 
-export { insertGoal, getGoal, getGoalById, updateGoal, deleteGoal };
+const contributeToGoal = (goalId, amount) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        `UPDATE goal SET progress = progress + ? WHERE id = ?;`,
+        [amount, goalId],
+        (tx, results) => {
+          if(results.rowsAffected > 0) {
+            resolve(true);
+          } else {
+            reject(new Error('Failed to update the goal progress'));
+          }
+        },
+        error => {
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export { insertGoal, getGoal, getGoalById, updateGoal, deleteGoal, contributeToGoal };

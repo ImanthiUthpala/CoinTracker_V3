@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '97%',
     backgroundColor: Colors.WHITE,
-    padding: 10,
+    padding: 2,
     borderRadius: 15,
     height: 170,
   },
@@ -176,6 +176,7 @@ const styles = StyleSheet.create({
   cardEdit: {
     display: 'flex',
     flexDirection: 'row',
+    marginLeft: 11,
     gap: 15,
   },
 });
