@@ -8,6 +8,7 @@ import GoalList from '../../components/GoalList';
 
 export const Goal = () => {
   const [goals, setGoals] = useState([]);
+  const [completedGoals, setCompletedGoals] = useState([]);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
 
@@ -16,14 +17,19 @@ export const Goal = () => {
       const data = await getGoal();
       console.log('Fetched Goal data: ', data);
       if (Array.isArray(data)) {
-        setGoals(data);
+        const filteredGoals = data.filter(goal => !goal.completed);
+        const filteredCompletedGoals = data.filter(goal => goal.completed);
+        setGoals(filteredGoals);
+        setCompletedGoals(filteredCompletedGoals);
       } else {
         console.error('Data received from getGoals is not an array: ', data);
         setGoals([]);
+        setCompletedGoals([]);
       }
     } catch (error) {
       console.error('Error fetching goals: ', error);
       setGoals([]);
+      setCompletedGoals([]);
     }
   };
 
@@ -55,14 +61,14 @@ export const Goal = () => {
   //   }
   // };
 
-  const handleComplete = async (goal) => {
-    try {
-      await setGoalAsComplete(goal.id);
-      fetchGoals(); // Refresh the list after marking as complete
-    } catch (error) {
-      console.error('Error setting goal as complete: ', error);
-    }
-  };
+  // const handleComplete = async (goal) => {
+  //   try {
+  //     await setGoalAsComplete(goal.id);
+  //     fetchGoals(); // Refresh the list after marking as complete
+  //   } catch (error) {
+  //     console.error('Error setting goal as complete: ', error);
+  //   }
+  // };
 
   const handlePress = () => {
     navigation.navigate('AddGoal');
@@ -81,8 +87,14 @@ export const Goal = () => {
       </View>
       <View style={styles.bottomContainer}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-
-          <GoalList goalList={goals} handleDelete={handleDelete}  />
+          <View>
+            <Text style={styles.subtitleText}>Goals</Text>
+            <GoalList goalList={goals} handleDelete={handleDelete} />
+          </View>
+          <View>
+            <Text style={styles.subtitleText}>Completed Goals</Text>
+            <GoalList goalList={completedGoals} handleDelete={handleDelete} />
+          </View>
           <View style={{ height: 280 }} />
         </ScrollView>
         <TouchableOpacity
@@ -111,6 +123,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
   },
+  subtitleText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginLeft: 10,
+    color: '#000',
+  },
   bottomContainer: {
     width: '100%',
     backgroundColor: '#fff',
@@ -124,7 +143,7 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     position: 'absolute',
-    top: 330,
+    top: 410,
     right: 5,
   },
 });

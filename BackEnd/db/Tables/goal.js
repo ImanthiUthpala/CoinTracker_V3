@@ -1,12 +1,12 @@
 import { db } from '../database';
 
-const insertGoal = (name, targetAmount, dueDate, icon, color) => {
+const insertGoal = (name, targetAmount, dueDate, icon, color, initialContribution) => {
   return new Promise ((resolve, reject) => {
     try {
       db.transaction(tx => {
         tx.executeSql(
-          `INSERT INTO goal (name, target_amount, due_date, icon, color) VALUES (?, ?, ?, ?, ?);`,
-          [name, targetAmount, dueDate, icon, color],
+          `INSERT INTO goal (name, target_amount, due_date, icon, color, progress) VALUES (?, ?, ?, ?, ?,?);`,
+          [name, targetAmount, dueDate, icon, color, initialContribution],
           (tx, result) => {
             resolve(result);
             console.log('Goal added successfully');
@@ -130,4 +130,23 @@ const contributeToGoal = (goalId, amount) => {
   });
 };
 
-export { insertGoal, getGoal, getGoalById, updateGoal, deleteGoal, contributeToGoal };
+const markGoalAsComplete = (goalId) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        `UPDATE goal SET completed = 1 WHERE id = ?;`, [goalId],
+        (tx, result) => {
+          resolve(result);
+          console.log('success');
+        }, 
+        (tx, error) => {
+          reject(error);
+          console.error('Error setting complete: ', error);
+        }
+        
+      )
+    })
+  })
+}
+
+export { insertGoal, getGoal, getGoalById, updateGoal, deleteGoal, contributeToGoal, markGoalAsComplete };

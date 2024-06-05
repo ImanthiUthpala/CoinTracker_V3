@@ -55,9 +55,11 @@ const ContributeGoal = ({ route, navigation }) => {
       <Text style={styles.goalTarget}>Target: {goal.target_amount}</Text>
       <Text style={styles.goalProgress}>Progress: {goal.progress}</Text>
       <Text style={[styles.goalRemaining, isExceeded && styles.exceededText]}>
-      <Text style={styles.goalDueDate}>Due date: {new Date(goal.due_date).toDateString()}</Text>
-        {isExceeded ? 'Exceeded by: ' : 'Remaining: '}{Math.abs(goal.target_amount - goal.progress)}
-      </Text>
+          {isExceeded ? 'Exceeded by: ' : 'Remaining: '}{Math.abs(goal.target_amount - goal.progress)}
+        </Text>
+      <View style={styles.row}>
+        <Text style={styles.goalDueDate}>Due date: {new Date(goal.due_date).toDateString()}</Text>
+      </View>
       {isOverdue && (
         <Text style={styles.overdueText}>
           Overdue by {overdueDays} {overdueDays === 1 ? 'day' : 'days'}
@@ -71,7 +73,7 @@ const ContributeGoal = ({ route, navigation }) => {
         value={amount}
         onChangeText={setAmount}
       />
-     <TouchableOpacity style={styles.Button} onPress={handleContribute}>
+      <TouchableOpacity style={styles.Button} onPress={handleContribute}>
         <Text style={styles.ButtonText}>Contribute</Text>
       </TouchableOpacity>
     </View>
@@ -137,6 +139,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Colors.WHITE,
     fontSize: 18,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 

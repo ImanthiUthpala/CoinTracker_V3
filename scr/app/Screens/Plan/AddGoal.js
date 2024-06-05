@@ -27,7 +27,7 @@ const AddGoal = ({ route }) => {
 
     try {
       console.log('Inserting goal...');
-      insertGoal(name, parseFloat(targetAmount), dueDate.toISOString(), icon, color);
+      insertGoal(name, parseFloat(targetAmount), dueDate.toISOString(), icon, color, parseFloat(initialContribution));
       console.log('Goal added successfully!');
       navigation.goBack();
 
@@ -103,7 +103,7 @@ const AddGoal = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 2,
     backgroundColor: Colors.WHITE,
   },
   scrollContainer: {

@@ -1,34 +1,15 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Colors from '../../../assets/Colors';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { getGoal, contributeToGoal } from '../../../BackEnd/db/Tables/goal';
+import { getGoal, markGoalAsComplete } from '../../../BackEnd/db/Tables/goal';
 import { ProgressBar } from 'react-native-paper';
 import moment from 'moment';
+import Colors from '../../../assets/Colors';
 
-const GoalList = ({ goalList = [], handleDelete, handleComplete }) => {
-
+const GoalList = ({ goalList = [], handleDelete }) => {
   const navigation = useNavigation();
-
-  const [goalData, setGoalData] = useState([]);
-
-  useEffect(() => {
-    async function fetchGoalData() {
-      try {
-        const data = await getGoal();
-        setGoalData(data);
-      } catch (error) {
-        console.error('Error fetching goals:', error);
-      }
-    }
-    fetchGoalData();
-  }, []);
-
-  if (!goalList || goalList.length === 0) {
-    return <Text>No goal data available</Text>
-  }
 
   const handleEdit = (goal) => {
     if (goal && goal.id) {
@@ -40,119 +21,134 @@ const GoalList = ({ goalList = [], handleDelete, handleComplete }) => {
 
   const handleContribute = (goal) => {
     if (goal && goal.id) {
-      navigation.navigate('ContributeGoal', {goalId: goal.id});
+      navigation.navigate('ContributeGoal', { goalId: goal.id });
     } else {
       console.error('Invalid goal object');
     }
   };
 
+  const handleComplete = async (goal) => {
+    if (goal && goal.id) {
+      try {
+        await markGoalAsComplete(goal.id);
+        const updatedGoalList = [...goalList];
+        const index = updatedGoalList.findIndex(g => g.id === goal.id);
+        if (index !== -1) {
+          updatedGoalList[index].completed = true;
+          handleGoalListUpdate(updatedGoalList); // Assuming you have a function to update goal list in the parent component
+        }
+      } catch (error) {
+        console.error('Error marking goal as complete: ', error);
+      }
+    } else {
+      console.error('Invalid goal object');
+    }
+  };
+
+  const confirmCompletion = (goal) => {
+    Alert.alert(
+      'Complete Goal',
+      'Are you sure you want to mark this goal as completed?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'OK', onPress: () => handleComplete(goal) },
+      ],
+      { cancelable: true }
+    );
+  };
 
   return (
     <View style={styles.container}>
-  {goalList?.length > 0 && (
-    <View>
-      {goalList.map((goal, index) => {
-        const progress = goal.progress / goal.target_amount;
-        const isExceeded = goal.progress > goal.target_amount;
-
-        const currentDate = moment();
-        const dueDate = moment(goal.due_date);
-        const isOverdue = currentDate.isAfter(dueDate);
-        const overDueDays = currentDate.diff(dueDate, 'days');
-
-        return (
-          <TouchableOpacity
-            key={index}
-            style={styles.container}
-          >
-            <View style={styles.iconContainer}>
-              {goal.icon && (
-                <Text style={[styles.iconText, { backgroundColor: goal?.color }]}>
-                  {goal.icon}
-                </Text>
-              )}
-            </View>
-            <View style={styles.detailsContainer}>
-              <Text style={styles.goalText}>{goal.name}</Text>
-              <Text style={styles.targetText}>Target: {goal.target_amount}</Text>
-              <Text style={styles.targetText}>Due Date: {new Date(goal.due_date).toDateString()}</Text>
-              <Text style={styles.progressText}>Progress: {goal.progress}</Text>
-              <Text style={[styles.remainingText, isExceeded && styles.exceededText]}>
-                {isExceeded ? 'Exceeded by: ' : 'Remaining: '}{Math.abs(goal.target_amount - goal.progress)}
-              </Text>
-              {isOverdue && (
-                <Text style={styles.overdueText}>
-                  Overdue by {overDueDays} {overDueDays ===1 ? 'day' : 'days'}
-                </Text>
-              )}
-              <View style={styles.progressBarContainer}>
-                <ProgressBar progress={progress} color={isExceeded ? Colors.RED : Colors.GREEN} style={styles.progressBar} />
+      {goalList?.length > 0 && (
+        <View>
+          {goalList.map((goal, index) => (
+            <View key={index} style={[styles.goalContainer, goal.completed && styles.completedContainer]}>
+              <View style={styles.iconContainer}>
+                {goal.icon && (
+                  <Text style={[styles.iconText, { backgroundColor: goal?.color }]}>
+                    {goal.icon}
+                  </Text>
+                )}
               </View>
-
-              
-
-                <View style={styles.actionContainer}>
-                  <TouchableOpacity onPress={() => handleContribute(goal)}>
-                    <Text style={styles.contributeText}>Contribute</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleComplete(goal)}>
-                    <Text style={styles.completeText}>Set as Complete</Text>
-                  </TouchableOpacity>
-                </View>
-              
-            </View>
-
-            <View style={styles.cardEdit}>
-                
+              <View style={styles.detailsContainer}>
+                <Text style={styles.goalText}>{goal.name}</Text>
+                <Text style={styles.targetText}>Target: {goal.target_amount}</Text>
+                <Text style={styles.targetText}>Due Date: {new Date(goal.due_date).toDateString()}</Text>
+                {goal.completed ? (
+                  <Text style={[styles.completedText]}>Completed</Text>
+                ) : (
+                  <>
+                    <Text style={styles.progressText}>Progress: {goal.progress}</Text>
+                    <Text style={[styles.remainingText, goal.progress > goal.target_amount && styles.exceededText]}>
+                      {goal.progress > goal.target_amount ? 'Exceeded by: ' : 'Remaining: '}{Math.abs(goal.target_amount - goal.progress)}
+                    </Text>
+                    <ProgressBar progress={goal.progress / goal.target_amount} color={Colors.GREEN} style={styles.progressBar} />
+                    
+                    <View style={styles.actionContainer}>
+                      <TouchableOpacity onPress={() => handleContribute(goal)}>
+                        <Text style={styles.actionText}>Contribute</Text>
+                      </TouchableOpacity>
+                      {!goal.completed && (
+                        <TouchableOpacity onPress={() => confirmCompletion(goal)}>
+                          <Text style={styles.actionText}>Set as Complete</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </>
+                )}
+              </View>
+              <View style={styles.cardEdit}>
+                {!goal.completed && (
                   <TouchableOpacity onPress={() => handleEdit(goal)}>
                     <FontAwesome6 name="edit" size={24} color="black" />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDelete(goal.id)}>
-                    <MaterialIcons name="delete-outline" size={24} color="black" />
-                  </TouchableOpacity>
-               
-                </View>
-          </TouchableOpacity>
-        );
-      })}
+                )}
+                <TouchableOpacity onPress={() => handleDelete(goal.id)}>
+                  <MaterialIcons name="delete-outline" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
     </View>
-  )}
-</View>
-
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
     marginTop: 5,
     marginLeft: 5,
     marginRight: 5,
-    display: 'flex',
+  },
+  goalContainer: {
     flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
     justifyContent: 'space-between',
-    width: '97%',
-    backgroundColor: Colors.WHITE,
-    padding: 2,
-    borderRadius: 15,
-    height: 170,
+    alignItems: 'center',
+    
+   // padding: 1,
+  },
+  completedContainer: {
+    backgroundColor: Colors.LIGHT_GRAY,
+   // marginTop: 50,
   },
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'baseline',
+    padding: 6,
   },
   iconText: {
     fontSize: 20,
     padding: 16,
     borderRadius: 15,
-    width: 60,
+    width:60,
   },
   detailsContainer: {
-    display: 'flex',
     flex: 1,
     marginLeft: 10,
-    height: 150,
+    minHeight: 120, // Set a minimum height for the container
+    marginBottom: 15, // Add margin bottom to create space between items
   },
   goalText: {
     fontSize: 18,
@@ -161,60 +157,59 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.GRAY,
   },
-  overdueText: {
-    fontSize: 16,
-    color: 'red',
-  },
   progressText: {
     fontSize: 16,
-    color: 'blue',
+    color: Colors.BLUE,
+  },
+  progressBar: {
+    height: 10,
+    borderRadius: 5,
   },
   remainingText: {
     fontSize: 16,
-    color: 'green',
+    color: Colors.GREEN,
   },
   exceededText: {
-    color: 'red',
+    color: Colors.RED,
   },
-  progressBarContainer: {
+  actionContainer: {
+    flexDirection: 'row',
     marginTop: 10,
   },
-  progressBar: {
-    height: 8,
-    borderRadius: 10,
+  actionText: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    backgroundColor: Colors.ORANGE,
+    borderRadius: 8,
+    marginRight: 10,
   },
-   cardEdit: {
+  // completeText: {
+  //  // color: Colors.WHITE,
+  //   backgroundColor: Colors.ORANGE,
+  //   //padding: 20,
+  //   borderRadius: 10,
+  //   fontWeight: '900',
+  //   width: 120,
+  //   textAlign: 'center',
+  //   alignSelf: 'center',
+  // },
+  cardEdit: {
     display: 'flex',
     flexDirection: 'row',
     marginLeft: 11,
     gap: 15,
   },
-  actionContainer: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  contributeText: {
-    color: Colors.BLACK,
-    backgroundColor: Colors.ORANGE,
-    padding: 5,
-    borderRadius: 10,
-    fontWeight: '700',
-    width: 90,
-    height: 48,
-    textAlign: 'center',
-    marginRight: 10,
-    //verticalAlign: 'auto',
-  },
-  completeText: {
-    color: Colors.BLACK,
+  completedText: {
+    color: Colors.WHITE,
     backgroundColor: Colors.GREEN,
     padding: 5,
     borderRadius: 10,
     fontWeight: '700',
     width: 90,
-    height: 48,
+    height: 30,
     textAlign: 'center',
+    alignSelf: 'auto',
+    marginTop: 10,
   },
 });
 

@@ -135,7 +135,8 @@ export const createTables = async () =>{
             due_date TEXT NOT NULL,
             icon TEXT,
             color TEXT,
-            progress REAL DEFAULT 0
+            progress REAL DEFAULT 0,
+            completed INTEGER DEFAULT 0
           );`,
           [],
           () => {
