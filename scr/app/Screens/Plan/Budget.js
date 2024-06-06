@@ -260,9 +260,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#82E80B',
   },
   summeryContainer: {
-    padding: 20,
+    padding: 10,
     backgroundColor: '#82E80B',
-    //marginBottom: 20,
+    height: 80,
   },
   expenseContainer: {
     flexDirection: 'row',
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     position: 'absolute',
-    top: 330,
+    top: 400,
     right: 5,
   },
   monthSlider: {

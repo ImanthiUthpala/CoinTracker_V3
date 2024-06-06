@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import IncomeList from '../../components/IncomeList';
 
 
+
+
 const categorizeIncome = (income) => {
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -79,7 +81,7 @@ export const Income = () => {
     setTotalIncome(total);
   };
 
-  const calculateMonthlyIncome = (data, month, year) => {
+   const calculateMonthlyIncome = (data, month, year) => {
    
     const total = data
       .filter(income => {
@@ -170,7 +172,7 @@ export const Income = () => {
         {renderMonthSlider()}
 
         <View style={styles.incomeContainer}>
-          <View>
+          {/* <View>
             <Text style={styles.titleText}>
               Total Income
             </Text>
@@ -178,7 +180,7 @@ export const Income = () => {
             <Text style={styles.amountText}>
               Rs. {totalIncome.toFixed(2)}
             </Text>
-          </View>
+          </View> */}
 
           <View>
             <Text style={styles.titleText}>
@@ -232,7 +234,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#82E80B',
   },
   incomeContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     marginTop: 20,
   },

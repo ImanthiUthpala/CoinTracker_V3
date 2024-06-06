@@ -20,12 +20,12 @@ export const AddBudget = ({ route, navigation }) => {
     const fetchCategoryName = async () => {
       try {
         const category = await getCategoryById(categoryId);
-        if (category && category.name){
+        if (category && category.name) {
           setCategoryName(category.name);
         } else {
           console.error('Category not found');
         }
-        
+
       } catch (error) {
         console.error('Error fetching category name: ', error);
       }
@@ -51,7 +51,7 @@ export const AddBudget = ({ route, navigation }) => {
       navigation.goBack();
       //updateBudget();
       //Fetch updated budgets after adding a new budget
-     // fetchBudgets();
+      // fetchBudgets();
       navigation.goBack();
     } catch (error) {
       console.error('Error adding budget: ', error);
@@ -66,73 +66,79 @@ export const AddBudget = ({ route, navigation }) => {
       keyboardVerticalOffset={Platform.OS === 'android' ? 60 : 0} >
 
 
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <Text style={styles.categoryLabel}>Category: {categoryName || 'Unknown Category'}</Text>
-      <Text style={styles.label}>Amount (Rs.)</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType='numeric'
-        value={amount}
-        onChangeText={(value) => setAmount(value)}
-      />
-
-      <Text style={styles.label}>Monthly / Weekly</Text>
-      <View style={styles.buttonGroup}>
-        <TouchableOpacity
-          style={[styles.dateTypeButton, dateType === 'week' && styles.selectedButton]}
-          onPress={() => setDateType('week')}
-        >
-          <Text style={[styles.buttonText, dateType === 'week' && styles.selectedButtonText]}>Week</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.dateTypeButton, dateType === 'month' && styles.selectedButton]}
-          onPress={() => setDateType('month')}
-        >
-          <Text style={[styles.buttonText, dateType === 'month' && styles.selectedButtonText]}>Month</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.label}>Start Date</Text>
-      <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
-        <Text style={styles.input}>{startDate.toDateString()}</Text>
-      </TouchableOpacity>
-      {showStartDatePicker && (
-        <DateTimePicker
-          value={startDate}
-          mode='date'
-          display='default'
-          onChange={(event, selectedDate) => {
-            setShowStartDatePicker(false);
-            if (selectedDate) {
-              setStartDate(selectedDate);
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.categoryLabel}>Category: {categoryName || 'Unknown Category'}</Text>
+        <Text style={styles.label}>Amount (Rs.)</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType='numeric'
+          value={amount}
+          onChangeText={(text) => {
+            const isValidInput = /^\d*\.?\d*$/.test(text); // Check for valid numeric input
+            if (isValidInput || text === '') {
+              setAmount(text);
             }
           }}
         />
-      )}
 
-      <Text style={styles.label}>End Date</Text>
-      <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
-        <Text style={styles.input}>{endDate.toDateString()}</Text>
-      </TouchableOpacity>
-      {showEndDatePicker && (
-        <DateTimePicker
-          value={endDate}
-          mode='date'
-          display='default'
-          onChange={(event, selectedDate) => {
-            setShowEndDatePicker(false);
-            if (selectedDate) {
-              setEndDate(selectedDate);
-            }
-          }}
-        />
-      )}
+        <Text style={styles.label}>Monthly / Weekly</Text>
+        <View style={styles.buttonGroup}>
+          <TouchableOpacity
+            style={[styles.dateTypeButton, dateType === 'week' && styles.selectedButton]}
+            onPress={() => setDateType('week')}
+          >
+            <Text style={[styles.buttonText, dateType === 'week' && styles.selectedButtonText]}>Week</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleAddBudget}>
-        <Text style={styles.buttonText}>Add Budget</Text>
-      </TouchableOpacity>
-    </ScrollView>
+          <TouchableOpacity
+            style={[styles.dateTypeButton, dateType === 'month' && styles.selectedButton]}
+            onPress={() => setDateType('month')}
+          >
+            <Text style={[styles.buttonText, dateType === 'month' && styles.selectedButtonText]}>Month</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.label}>Start Date</Text>
+        <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
+          <Text style={styles.input}>{startDate.toDateString()}</Text>
+        </TouchableOpacity>
+        {showStartDatePicker && (
+          <DateTimePicker
+            value={startDate}
+            mode='date'
+            display='default'
+            onChange={(event, selectedDate) => {
+              setShowStartDatePicker(false);
+              if (selectedDate) {
+                setStartDate(selectedDate);
+              }
+            }}
+          />
+        )}
+
+        <Text style={styles.label}>End Date</Text>
+        <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
+          <Text style={styles.input}>{endDate.toDateString()}</Text>
+        </TouchableOpacity>
+        {showEndDatePicker && (
+          <DateTimePicker
+            value={endDate}
+            mode='date'
+            display='default'
+            minimumDate={startDate}
+            onChange={(event, selectedDate) => {
+              setShowEndDatePicker(false);
+              if (selectedDate) {
+                setEndDate(selectedDate);
+              }
+            }}
+          />
+        )}
+
+        <TouchableOpacity style={styles.button} onPress={handleAddBudget}>
+          <Text style={styles.buttonText}>Add Budget</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -151,7 +157,7 @@ const styles = StyleSheet.create({
   },
   categoryLabel: {
     fontSize: 20,
-   // fontWeight: 'bold',
+    // fontWeight: 'bold',
     marginBottom: 20,
   },
   label: {

@@ -32,11 +32,11 @@ export const createTables = async () =>{
       db.transaction(tx =>{
 
         // tx.executeSql(
-        //   `DROP TABLE goal;
+        //   `DROP TABLE expense;
         //   );`,
         //   [],
         //   () => {
-        //     console.log('goal table drop successfully');
+        //     console.log('expense table drop successfully');
         //   },
         //   (_, error) => {
         //     reject(error);
@@ -141,6 +141,26 @@ export const createTables = async () =>{
           [],
           () => {
             console.log('Goal table created successfuly');
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS bill (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            amount REAL NOT NULL,
+            due_date TEXT NOT NULL,
+            reminder_date TEXT NOT NULL,
+            icon TEXT,
+            color TEXT,
+            paid BOOLEAN NOT NULL DEFAULT FALSE
+          );`,
+          [],
+          () => {
+            console.log('Bill table created successfully');
           },
           (_, error) => {
             reject(error);

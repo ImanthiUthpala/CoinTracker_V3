@@ -17,21 +17,26 @@ const insertSource = (name, icon, color, callback = () => {}) => {
   }
 }
 
-const getSources = (callback = () => {}) => {
-  try {
-    db.transaction(tx => {
-      tx.executeSql(
-        `SELECT * FROM sources;`, [], 
-        (_, { rows: { _array } }) => {
-          callback(_array);
-        },
-      );
-    });
-  } catch (error) {
-    console.error('Error in getSource', error);
-    callback([]);
-  }
-}
+const getSources = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT * FROM sources;`, [],
+          (_, { rows: { _array } }) => {
+            resolve(_array);
+          },
+          (tx, error) => {
+            reject(error);
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error in getSources', error);
+      reject([]);
+    }
+  });
+};
 
 const getSourceById = (id, callback = () =>{}) => {
   try{

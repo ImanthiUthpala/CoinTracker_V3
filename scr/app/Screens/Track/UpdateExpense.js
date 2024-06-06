@@ -44,7 +44,12 @@ export const UpdateExpense = ({ route, navigation }) => {
         style={styles.input}
         keyboardType="numeric"
         value={amount}
-        onChangeText={(value) => setAmount(value)}
+        onChangeText={(text) => {
+          const isValidInput = /^\d*\.?\d*$/.test(text); // Check for valid numeric input
+          if (isValidInput || text === '') {
+            setAmount(text);
+          }
+        }}
       />
       <Text style={styles.label}>Date</Text>
       <TouchableOpacity onPress={() => setShowDatePicker(true)}>
@@ -55,6 +60,7 @@ export const UpdateExpense = ({ route, navigation }) => {
           value={date}
           mode="date"
           display="default"
+          maximumDate={new Date()}
           onChange={(event, selectedDate) => {
             setShowDatePicker(false);
             if (selectedDate) {

@@ -85,7 +85,12 @@ export const UpdateBudget = ( {route, navigation}) => {
           style={styles.input}
           keyboardType='numeric'
           value={amount}
-          onChangeText={(value) => setAmount(value)}
+          onChangeText={(text) => {
+            const isValidInput = /^\d*\.?\d*$/.test(text); // Check for valid numeric input
+            if (isValidInput || text === '') {
+              setAmount(text);
+            }
+          }}
         />
 
         <Text style={styles.label}>Monthly / Weekly</Text>
@@ -132,6 +137,7 @@ export const UpdateBudget = ( {route, navigation}) => {
             value={endDate}
             mode='date'
             display='default'
+            minimumDate={startDate}
             onChange={(event, selectedDate) => {
               setShowEndDatePicker(false);
               if (selectedDate) {

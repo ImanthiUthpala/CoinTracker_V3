@@ -78,7 +78,12 @@ const UpdateGoal = () => {
           placeholder="Enter Target Amount"
           keyboardType="numeric"
           value={targetAmount}
-          onChangeText={setTargetAmount}
+          onChangeText={(text) => {
+            const isValidInput = /^\d*\.?\d*$/.test(text); // Check for valid numeric input
+            if (isValidInput || text === '') {
+              setTargetAmount(text);
+            }
+          }}
         />
         <Text style={styles.label}>Due Date</Text>
         <TouchableOpacity onPress={() => setShowDatePicker(true)}>
@@ -89,6 +94,7 @@ const UpdateGoal = () => {
             value={dueDate}
             mode='date'
             display='default'
+            minimumDate={new Date()} // Prevent selecting a date before the current date
             onChange={(event, selectedDate) => {
               setShowDatePicker(false);
               if (selectedDate) {
@@ -103,7 +109,12 @@ const UpdateGoal = () => {
           placeholder="Enter Initial Contribution"
           keyboardType="numeric"
           value={initialContribution}
-          onChangeText={setInitialContribution}
+          onChangeText={(text) => {
+            const isValidInput = /^\d*\.?\d*$/.test(text);
+            if (isValidInput || text === '') {
+              setInitialContribution(text);
+            }
+          }}
         />
       </View>
       <TouchableOpacity style={styles.updateButton} onPress={handleUpdateGoal}>

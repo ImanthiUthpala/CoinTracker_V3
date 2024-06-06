@@ -170,7 +170,7 @@ export const Expense = () => {
         {renderMonthSlider()}
 
         <View style={styles.expenseContainer}>
-          <View>
+          {/* <View>
             <Text style={styles.titleText}>
               Total Expense
             </Text>
@@ -178,7 +178,7 @@ export const Expense = () => {
             <Text style={styles.amountText}>
               Rs. {totalExpense.toFixed(2)}
             </Text>
-          </View>
+          </View> */}
 
           <View>
             <Text style={styles.titleText}>
@@ -228,11 +228,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#82E80B',
   },
   summeryContainer: {
-    padding: 20,
+    padding: 10,
     backgroundColor: '#82E80B',
+    height: 80,
   },
   expenseContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     marginTop: 20,
   },
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     position: 'absolute',
-    top: 330,
+    top: 400,
     right: 5,
     //marginRight:10,
   },

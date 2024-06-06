@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {SafeAreaProvider } from 'react-native-safe-area-context';
 
 import {Budget} from "./Budget";
-import {Bill_Reminder} from "../Bill_Reminder";
+//import {Bill} from "./Bill";
 import {Goal} from "./Goal";
 
 import {UpdateCategory} from "../Track/UpdateCategory"
@@ -17,6 +17,10 @@ import { BudgetCategory} from './BudgetCategory';
 import AddGoal from './AddGoal';
 import UpdateGoal from './UpdateGoal';
 import ContributeGoal from '../../components/ContributeGoal';
+
+import AddBill from './AddBill';
+import UpdateBill from './UpdateBill';
+import Bill from './Bill';
 //import Goal from '../Plan/Goal';
 
 const PlanTab = createMaterialTopTabNavigator();
@@ -141,11 +145,45 @@ function GoalStack(){
   );
 }
 
+function BillStack(){
+  return( 
+    <Stack.Navigator>
+      <Stack.Screen
+        name="BillStack"
+        component={Bill}
+        options={{
+          headerShown:false
+        }}
+        />
+      <Stack.Screen
+        name="AddBill"
+        component={AddBill}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+        <Stack.Screen
+        name="UpdateBill"
+        component={UpdateBill}
+        options={{
+          presentation:'modal',
+          headerShown:true
+          }
+        }
+        />
+       
+    </Stack.Navigator>
+  );
+}
+
+
 export const Plan = () => {
   return (
       <PlanTab.Navigator>
           <PlanTab.Screen name="Budget" component={BudgetStack} />
-          <PlanTab.Screen name="Reminder" component={Bill_Reminder} />
+          <PlanTab.Screen name="Reminder" component={BillStack} />
           <PlanTab.Screen name="Goal" component={GoalStack} />
 
       </PlanTab.Navigator>

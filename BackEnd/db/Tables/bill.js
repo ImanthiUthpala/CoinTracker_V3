@@ -1,71 +1,137 @@
-import { openDatabase } from '../database';
+import { db } from '../database';
 
-async function createBillTable() {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `CREATE TABLE IF NOT EXISTS bill (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        due_date TEXT NOT NULL,
-        amount REAL NOT NULL,
-        paid BOOLEAN NOT NULL DEFAULT FALSE
-      );`
-    );
+const insertBill = (name, amount, dueDate, reminderDate, icon, color, paid) => {
+  return new Promise ((resolve, reject) => {
+    try {
+      db.transaction(tx => {
+        tx.executeSql(
+          `INSERT INTO bill (name, amount, due_date, reminder_date, icon, color, paid) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+          [name,  amount, dueDate, reminderDate, icon, color,paid ? 1 : 0], // Default paid to false
+          (tx, result) => {
+            resolve(result);
+            console.log('Bill added Successfully');
+          },
+          (tx, error) => {
+            reject(error);
+            console.error('Error adding bill: ', error);
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error in adding bill', error);
+    }
+  });
+};
+
+const getBill = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT * FROM bill;`,
+          [],
+          (_, {rows: {_array} }) => {
+            resolve(_array);
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error in getBill: ', error);
+      reject(error);
+    }
   });
 }
 
-async function insertBill(name, dueDate, amount) {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `INSERT INTO bill (name, due_date, amount, paid) VALUES (?, ?, ?, ?)`,
-      [name, dueDate, amount, false] // Default paid to false
-    );
+const getBillById = (id) => {
+  return new Promise((resolve, reject) => {
+    try {
+      db.transaction(tx => {
+        return tx.executeSql(
+          `SELECT * FROM bill WHERE id = ?`,
+          [id],
+          (_, { rows: { _array } }) => {
+            if (_array && _array.length > 0) {
+              resolve(_array[0]);
+            } else {
+              resolve(null);
+            }
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error in getBillById:', error);
+      reject(error);
+    }
   });
+};
+
+const updateBill = (id, name, amount, dueDate, reminderDate, icon, color) => {
+  return new Promise((resolve, reject) => {
+    try {
+      db.transaction(tx => {
+        tx.executeSql(
+          `UPDATE bill SET name = ?, amount = ?, due_date = ?, reminder_date = ?, icon = ?, color = ? WHERE id = ?`,
+          [name, amount, dueDate, reminderDate, icon, color, id],
+          (_, { rowsAffected }) => {
+            if (rowsAffected > 0) {
+              resolve(true); // Indicate that the update was successful
+            } else {
+              resolve(false); // Indicate that no rows were affected, possibly due to no matching ID
+            }
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error in updating bill', error);
+      reject(error);
+    } 
+  });
+};
+
+const updateBillPaidStatus = (id, paid) => {
+  try{
+    db.transaction(tx => {
+      tx.executeSql(
+        `UPDATE bill SET paid = ? WHERE id = ?;`,
+        [paid, id],
+        (_, result) => {
+          console.log('Updated paid sateus successfully');
+        },
+        (_, error) => {
+          console.error('Error in updating paid status', error);
+        }
+      )
+    })
+  } catch (error) {
+    console.error('Error in updating paid status', error);
+  }
+}
+const deleteBill = (id) => {
+  try {
+    db.transaction(tx => {
+      tx.executeSql(
+        `DELETE FROM bill WHERE id = ?`,
+        [id],
+        (_, result) => {
+          console.log('Bill deleted successfully');
+        },
+        (_, error) => {
+          console.error('Error in deleting bill', error);
+        }
+      );
+    });
+  } catch (error) {
+    console.error('Error in deleting Bill: ', error);
+  } 
 }
 
-async function getBill() {
-  await openDatabase();
-  const results = await db.transactionAsync(async tx => {
-    return tx.executeSqlAsync(
-      `SELECT * FROM bill`
-    );
-  });
-  const rows = results.rows._array;
-  return rows;
-}
-
-async function getBillById(id) {
-  await openDatabase();
-  const results = await db.transactionAsync(async tx => {
-    return tx.executeSqlAsync(
-      `SELECT * FROM bill WHERE id = ?`,
-      [id]
-    );
-  });
-  const row = results.rows.length > 0 ? results.rows._array[0] : null;
-  return row;
-}
-
-async function updateBill(id, name, dueDate, amount, paid) {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `UPDATE bill SET name = ?, due_date = ?, amount = ?, paid = ? WHERE id = ?`,
-      [name, dueDate, amount, paid, id]
-    );
-  });
-}
-
-async function deleteBill(id) {
-  await openDatabase();
-  await db.transactionAsync(async tx => {
-    tx.executeSqlAsync(
-      `DELETE FROM bill WHERE id = ?`,
-      [id]
-    );
-  });
-}
-
-export { createBillTable, insertBill, getBill, getBillById, updateBill, deleteBill };
+export {insertBill, getBill, getBillById, updateBill, deleteBill, updateBillPaidStatus };

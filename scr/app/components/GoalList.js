@@ -121,13 +121,17 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 5,
     marginRight: 5,
+    
   },
   goalContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    
-   // padding: 1,
+    borderWidth: 1,
+    borderColor: Colors.GRAY,
+    borderRadius: 15, 
+    padding: 4,
+    marginTop: 10,
   },
   completedContainer: {
     backgroundColor: Colors.LIGHT_GRAY,
@@ -139,10 +143,11 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   iconText: {
-    fontSize: 20,
-    padding: 16,
-    borderRadius: 15,
-    width:60,
+    textAlign: 'center',
+    fontSize: 30,
+    padding: 10,
+    borderRadius: 100,
+    color: Colors.WHITE,
   },
   detailsContainer: {
     flex: 1,
